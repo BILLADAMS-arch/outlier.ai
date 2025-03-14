@@ -17,16 +17,24 @@
             <img src="images/outlier.png" alt="Outlier">
             <nav>
                 <ul>
-                    <li><a href="#" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
-                    <li><a href="#" id="tasks-link"><i class="fa-solid fa-clipboard-list"></i> Tasks</a></li>
-                    <li><a href="#"><i class="fa-solid fa-clipboard-check"></i> Completed Tasks</a></li>
-                    <li><a href="#"><i class="fa-solid fa-money-check-dollar"></i> Earnings</a></li>
-                    <li><a href="#"><i class="fa-solid fa-chalkboard"></i> Learn Skills</a></li>
+                    <li><a id="home-link" href="index.html" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
+                    <li><a id="tasks-link" href="tasks.html"><i class="fa-solid fa-clipboard-list"></i> Tasks (8)</a></li>
+                    <li><a id="completed-tasks-link" href="completed-tasks.html"><i class="fa-solid fa-clipboard-check"></i> Completed Tasks (3)</a></li>
+                    <li><a id="earnings-link" href="earnings.html"><i class="fa-solid fa-money-check-dollar"></i> Earnings</a></li>
+                    <li><a id="learn-skills-link" href="learn-skills.html"><i class="fa-solid fa-chalkboard"></i> Learn Skills</a></li>
                 </ul>
             </nav>
+
         </aside>
 
         <!-- Main Content -->
+
+                <div class="notification-area">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="user-name">Mercy Mumbe</span>
+            </div>
+
+
         <main class="main-content">
             <header>
                 <div class="header-content">
@@ -66,14 +74,14 @@
             </section>
 
             <section class="todo-list">
-                <h2>Todos (1)</h2>
+                <h2>Todos (8)</h2>
                 <div class="todo-item">
                     <i class="fa-solid fa-piggy-bank"></i>
                     <div class="todo-text">
                         <h3>Setup Banking</h3>
                         <p>Connect a payment method to receive payments for completed projects</p>
                     </div>
-                    <button>Setup Banking</button>
+                    <a href="setup-banking.html" class="button">Setup Banking</a>
                 </div>
 
                 <div class="todo-item">

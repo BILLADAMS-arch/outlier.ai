@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Banking - Outlier</title>
+    <link rel="icon" type="image/jpeg" href="images/header.jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js" defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <img src="images/outlier.png" alt="Outlier Logo">
+            <nav>
+                <ul>
+                    <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+                    <li><a href="tasks.html"><i class="fa-solid fa-clipboard-list"></i> Tasks (8)</a></li>
+                    <li><a href="completed-tasks.html"><i class="fa-solid fa-clipboard-check"></i> Completed Tasks (3)</a></li>
+                    <li><a href="earnings.html"><i class="fa-solid fa-money-check-dollar"></i> Earnings</a></li>
+                    <li><a href="learn-skills.html"><i class="fa-solid fa-chalkboard"></i> Learn Skills</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="setup-banking-container">
+            <h1>Setup Banking</h1>
+            <p class="info">To receive payments for completed projects, select and add your preferred payment method below.</p>
+
+            <div class="payment-options">
+                <div class="payment-method">
+                    <i class="fa-solid fa-university"></i>
+                    <div class="text-content">
+                        <h3>Bank Account</h3>
+                        <p>Secure direct deposits to your bank account.</p>
+                    </div>
+                    <div class="button-container">
+                        <button class="btn-bank">Add Bank Account</button>
+                    </div>
+                </div>
+
+                <div class="payment-method">
+                    <i class="fa-brands fa-paypal"></i>
+                    <div class="text-content">
+                        <h3>PayPal</h3>
+                        <p>Receive payments instantly via PayPal.</p>
+                    </div>
+                    <div class="button-container">
+                        <button class="btn-paypal">Add PayPal</button>
+                    </div>
+                </div>
+
+                <div class="payment-method">
+                    <i class="fa-solid fa-wallet"></i>
+                    <div class="text-content">
+                        <h3>AirTM</h3>
+                        <p>Flexible and global payment method.</p>
+                    </div>
+                    <div class="button-container">
+                        <button class="btn-airtm">Add AirTM</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax Documents Section -->
+            <section class="tax-documents">
+                <h2>Tax Documents</h2>
+                <p class="tax-info">
+                    To comply with tax regulations, all taskers must submit the required tax documents before receiving payments.
+                    Failure to submit these forms will result in **non-payment.**
+                </p>
+
+                <div class="document-options">
+                    <div class="document-item">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <div class="text-content">
+                            <h3>W-9 Form</h3>
+                            <p>Required for U.S.-based freelancers.</p>
+                        </div>
+                        <div class="button-container">
+                            <button class="btn-tax">Submit W-9</button>
+                        </div>
+                    </div>
+
+                    <div class="document-item">
+                        <i class="fa-solid fa-file-contract"></i>
+                        <div class="text-content">
+                            <h3>General Tax Form</h3>
+                            <p>Required for international freelancers.</p>
+                        </div>
+                        <div class="button-container">
+                            <button class="btn-tax">Submit Tax Form</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
