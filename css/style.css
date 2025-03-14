@@ -1,0 +1,258 @@
+/* Import FontAwesome */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css');
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-image: url(../images/images.jpeg); /* Ensure the correct path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Add a light overlay */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    z-index: -1;
+}
+
+/* Layout Structure */
+.container {
+    display: flex;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 250px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar img {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.sidebar ul li a.active {
+    color: #007bff;
+    background: #e6f0ff;
+}
+
+.sidebar ul li a i {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e6f0ff;
+    border-radius: 5px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: 600;
+}
+
+header p {
+    color: gray;
+    font-weight: 400;
+}
+
+/* Stats Section */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 120px; /* Adjust height as needed */
+}
+
+.stat-card i {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e6f0ff;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.stat-card span {
+    font-size: 0.9rem;
+    color: gray;
+    font-weight: 400;
+    margin-bottom: 5px;
+}
+
+.stat-card .value {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Projects & Todo List */
+.projects, .todo-list {
+    margin-top: 20px;
+}
+
+.project-card, .todo-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.project-card i, .todo-item i {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e6f0ff;
+    border-radius: 5px;
+    margin-right: 20px;
+}
+
+.project-text, .todo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.project-card h3, .todo-item h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.project-card p, .todo-item p {
+    font-size: 0.9rem;
+    color: gray;
+    font-weight: 400;
+}
+
+/* Buttons */
+.project-card button, .todo-item button {
+    padding: 8px 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: auto;
+    font-weight: 600;
+    transition: background 0.3s ease-in-out;
+}
+
+.project-card button:hover, .todo-item button:hover {
+    background: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        text-align: center;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .project-card,
+    .todo-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .project-card button,
+    .todo-item button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
