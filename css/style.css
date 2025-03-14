@@ -256,3 +256,128 @@ header p {
         margin-top: 10px;
     }
 }
+
+/* Tasks Page */
+.tasks-list {
+    margin-top: 20px;
+}
+
+.task-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.task-item i {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e6f0ff;
+    border-radius: 5px;
+    margin-right: 20px;
+}
+
+.task-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.task-item h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.task-item p {
+    font-size: 0.9rem;
+    color: gray;
+    font-weight: 400;
+}
+
+/* Button for Marking Task Complete */
+.complete-task {
+    padding: 8px 12px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: auto;
+    font-weight: 600;
+    transition: background 0.3s ease-in-out;
+}
+
+.complete-task:hover {
+    background: #218838;
+}
+/* Tabs Styling */
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.tab-link {
+    background: #eee;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.tab-link.active {
+    background: #6a5acd; /* Medium Purple */
+    color: white;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none; /* Hide all tab content by default */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.tab-content.active {
+    display: grid; /* Only show the active tab */
+}
+
+/* Project Boxes */
+.project-item {
+    background: #e6e0f8; /* Light Purple */
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.project-item:hover {
+    transform: scale(1.05);
+}
+
+.project-item i {
+    font-size: 40px;
+    color: #6a5acd; /* Medium Purple */
+    margin-bottom: 10px;
+}
+
+.project-text h3 {
+    margin: 10px 0 5px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.project-text p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #555;
+}

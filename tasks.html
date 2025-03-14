@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Outlier</title>
+    <link rel="icon" type="image/jpeg" href="images/header.jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js" defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <img src="images/outlier.png" alt="Outlier">
+            <nav>
+                <ul>
+                    <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+                    <li><a href="#" class="active"><i class="fa-solid fa-clipboard-list"></i> Tasks</a></li>
+                    <li><a href="#"><i class="fa-solid fa-clipboard-check"></i> Completed Tasks</a></li>
+                    <li><a href="#"><i class="fa-solid fa-money-check-dollar"></i> Earnings</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chalkboard"></i> Learn Skills</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Your Projects</h1>
+                    <p>Manage and track your ongoing and available projects</p>
+                </div>
+            </header>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-link active" onclick="openTab(event, 'current-projects')">Current Projects</button>
+                <button class="tab-link" onclick="openTab(event, 'available-projects')">Available Projects</button>
+            </div>
+
+            <!-- Current Projects -->
+            <section id="current-projects" class="tab-content active">
+                <div class="project-item">
+                    <i class="fa-solid fa-flask"></i>
+                    <div class="project-text">
+                        <h3>STEM Evaluation</h3>
+                        <p>Estimate: 5m per task | 10.8k tasks left</p>
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <i class="fa-solid fa-code"></i>
+                    <div class="project-text">
+                        <h3>Code Generation</h3>
+                        <p>Estimate: 60m per task | 360 tasks left</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Available Projects -->
+            <section id="available-projects" class="tab-content">
+                <div class="project-item">
+                    <i class="fa-solid fa-calculator"></i>
+                    <div class="project-text">
+                        <h3>Math Generation</h3>
+                        <p>Estimate: 12m per task | 505 tasks left</p>
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <i class="fa-solid fa-comments"></i>
+                    <div class="project-text">
+                        <h3>Chatbot Spanish</h3>
+                        <p>Estimate: 8m per task | 1.7k tasks left</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
