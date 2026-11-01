@@ -11,7 +11,7 @@ supabase login
 supabase link --project-ref uviopkumykzfabzkeswc
 supabase secrets set RESEND_API_KEY=<your Resend key> \
   EMAIL_FROM="Outlier <support@outlier.cfd>" EMAIL_REPLY_TO=support@outlier.cfd SUPPORT_EMAIL=support@outlier.cfd \
-  APP_URL=https://<your-site>.vercel.app CRON_SECRET=<long random string> OTP_EXPIRY_MINUTES=60
+  APP_URL=https://<your-site>.vercel.app CRON_SECRET=<long random string> OTP_EXPIRY_MINUTES=5
 ```
 Add later: `SEND_EMAIL_HOOK_SECRET` (shown when you create the Auth hook, step 3) and `RESEND_WEBHOOK_SECRET` (shown when you create the Resend webhook, step 5).
 Rotate the Resend key in the Resend dashboard whenever it has been shared, then run `supabase secrets set RESEND_API_KEY=...` again.
@@ -26,7 +26,7 @@ Rotate the Resend key in the Resend dashboard whenever it has been shared, then 
 | `CRON_SECRET` | long random string (same value as in `schedule.sql`) |
 | `SEND_EMAIL_HOOK_SECRET` | from the Supabase Send Email hook |
 | `RESEND_WEBHOOK_SECRET` | from the Resend webhook (`whsec_...`) |
-| `OTP_EXPIRY_MINUTES` | text shown in the code emails; set the same value in Auth > Providers > Email > "Email OTP Expiration" |
+| `OTP_EXPIRY_MINUTES` | `5`. Text shown in the code emails; must match the Supabase expiry (300 seconds, below) |
 
 ## 2. Deploy the functions
 ```
@@ -49,3 +49,20 @@ Copy its signing secret into `RESEND_WEBHOOK_SECRET`. Until this is done the out
 
 ## Where to look when something does not arrive
 `select type, to_email, status, attempts, last_error, delivery_status from email_outbox order by created_at desc;`
+
+
+## One-time codes: 6 digits, 5 minutes
+Dashboard > **Authentication > Sign In / Providers > Email**:
+- **Email OTP Length** = `6` (the app now accepts exactly six digits; set this BEFORE deploying the new front end, or existing 8-digit codes will be rejected).
+- **Email OTP Expiration** = `300` (seconds).
+- Keep **Confirm email** on. Rate limits (Authentication > Rate Limits) are not changed by anything in this repository.
+
+Because the Send Email hook is on, the emails are rendered by the `auth-email` function and the code comes from the hook payload (`email_data.token`), so the templates in the Supabase dashboard are not used.
+If you ever turn the hook off, paste `supabase/auth-templates/confirm-signup.html` into *Authentication > Email Templates > Confirm signup* and `reset-password.html` into *Reset password*. Both print the code with Supabase's `{{ .Token }}` variable.
+
+## Why queued emails did not arrive (audit result)
+Database triggers queue every event email (welcome, approvals, assignments, submissions, reviews, payments, reminders). Something must then run `send-emails`. Two things do:
+1. **The app**: after each real event (and when someone signs in) it asks `send-emails` to deliver the queue immediately. Requires redeploying `send-emails` (it now accepts a signed-in user's token as well as the cron secret).
+2. **The schedule**: `supabase/schedule.sql` (pg_cron + pg_net) runs it every minute and also queues reminders and statements. Without it, reminders and the Monday/1st statements never fire and a stuck queue is only flushed when someone uses the app.
+
+Check anytime in Admin > Settings: the *Email delivery log* shows queued/sent/failed rows, *Notification errors* shows events that could not queue an email.

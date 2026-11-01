@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { emailOk, nameProblem, passwordProblem } from '../utils/validation'
+import { emailOk, nameProblem, OTP_LENGTH, otpOk, passwordProblem } from '../utils/validation'
 
 const COOLDOWN = 60
 
@@ -34,7 +34,7 @@ export default function Login() {
     try { await work() } catch (err) { setFormError(err.message) } finally { setBusy(false) }
   }
   const email = form.email.trim()
-  const codeProblem = (c) => (/^\d{4,10}$/.test(c.trim()) ? '' : 'Enter the code from your email.')
+  const codeProblem = (c) => (otpOk(c) ? '' : `Enter the ${OTP_LENGTH}-digit code from your email.`)
 
   const submit = (e) => {
     e.preventDefault()
@@ -64,8 +64,8 @@ export default function Login() {
   )
   const tabs = mode === 'in' || mode === 'up'
   const titles = { in: ['Welcome back', 'Sign in to see your dashboard and projects.'], up: ['Create your account', 'Your full name becomes your tasker name and cannot be changed later.'],
-    verify: ['Verify your email', 'Enter the one-time code we emailed you. Your account stays inactive until it is verified.'], forgot: ['Forgot your password?', 'Enter your email and we will send a one-time reset code.'],
-    reset: ['Choose a new password', 'Enter the code from your email and your new password. The code works once and expires.'] }[mode]
+    verify: ['Verify your email', 'Enter the 6-digit code we emailed you. It expires in 5 minutes and works once. Your account stays inactive until it is verified.'], forgot: ['Forgot your password?', 'Enter your email and we will send a one-time reset code.'],
+    reset: ['Choose a new password', 'Enter the 6-digit code from your email and your new password. The code expires in 5 minutes and works once.'] }[mode]
 
   return (
     <div className="auth-wrap">
@@ -83,7 +83,7 @@ export default function Login() {
         <form onSubmit={submit} noValidate>
           {mode === 'up' && field('fullName', 'Full name', 'text', { autoComplete: 'name', maxLength: 80 })}
           {(mode === 'in' || mode === 'up' || mode === 'forgot') && field('email', 'Email', 'email', { autoComplete: 'email' })}
-          {(mode === 'verify' || mode === 'reset') && field('code', 'One-time code', 'text', { inputMode: 'numeric', autoComplete: 'one-time-code', maxLength: 10, placeholder: '123456' })}
+          {(mode === 'verify' || mode === 'reset') && field('code', 'One-time code', 'text', { inputMode: 'numeric', autoComplete: 'one-time-code', maxLength: OTP_LENGTH, placeholder: '123456' })}
           {(mode === 'in' || mode === 'up' || mode === 'reset') && field('password', mode === 'in' ? 'Password' : mode === 'reset' ? 'New password (8+ characters, with a number)' : 'Password (8+ characters, with a number)', 'password', { autoComplete: mode === 'in' ? 'current-password' : 'new-password' })}
           {(mode === 'up' || mode === 'reset') && field('confirm', 'Confirm password', 'password', { autoComplete: 'new-password' })}
           {formError && <div className="callout bad" role="alert">{formError}</div>}

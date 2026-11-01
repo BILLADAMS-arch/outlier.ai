@@ -15,7 +15,7 @@ const STATUS_CLASS = { sent: 'status-approved', queued: 'status-pending', sendin
 
 export default function AdminSettings() {
   const toast = useToast()
-  const query = useAsync(async () => ({ settings: Object.fromEntries((await earningsApi.listSettings()).map((s) => [s.key, s.value])), outbox: await earningsApi.listOutbox() }), [], { refreshOnFocus: true })
+  const query = useAsync(async () => ({ settings: Object.fromEntries((await earningsApi.listSettings()).map((s) => [s.key, s.value])), outbox: await earningsApi.listOutbox(), errors: await earningsApi.listSystemErrors().catch(() => []) }), [], { refreshOnFocus: true })
   const [busy, setBusy] = useState('')
   async function save(key, value) {
     setBusy(key)
@@ -23,7 +23,7 @@ export default function AdminSettings() {
   }
   return (
     <Loaded query={query}>
-      {({ settings, outbox }) => (
+      {({ settings, outbox, errors }) => (
         <>
           {FIELDS.map(([group, rows]) => (
             <section className="panel" key={group}><h2>{group}</h2>
@@ -39,6 +39,10 @@ export default function AdminSettings() {
           <section className="panel"><h2>Scheduled jobs</h2>
             <p className="muted">Reminders and weekly/monthly statements run automatically when the schedule from <code>supabase/schedule.sql</code> is installed. You can also run them now.</p>
             <button className="btn" disabled={busy === 'jobs'} onClick={async () => { setBusy('jobs'); try { const r = await earningsApi.runJobs(); toast.success(`Reminders queued: ${r.reminders}. Statements queued: ${r.statements}.`); query.reload() } catch (e) { toast.error(e.message) } finally { setBusy('') } }}>Run scheduled jobs now</button>
+          </section>
+          <section className="panel"><h2>Notification errors ({errors.length})</h2>
+            <p className="muted small">If a database event could not queue its notification or email, the reason is recorded here instead of being lost.</p>
+            {errors.length ? <ul className="mini-list">{errors.map((x) => <li key={x.id}><span><b>{x.context}</b>: {x.message}</span><span className="muted small">{fmtDateTime(x.at)}</span></li>)}</ul> : <p className="muted">None recorded.</p>}
           </section>
           <section><h2>Email delivery log</h2>
             <p className="muted small">Emails are queued only after the real event happened, de-duplicated, and sent through Resend by the send-emails function. Nothing is sent until that function and its secrets are deployed.</p>

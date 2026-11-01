@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import * as authService from '../services/auth'
+import { kickEmails } from '../services/mailer'
 
 const AuthContext = createContext(null)
 
@@ -16,6 +17,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const userId = session?.user?.id ?? null
+  useEffect(() => { if (userId) kickEmails() }, [userId])
   const refreshProfile = useCallback(async () => {
     if (!userId) return
     try {

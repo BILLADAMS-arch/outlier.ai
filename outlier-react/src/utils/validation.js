@@ -1,3 +1,7 @@
+// Must match Supabase: Authentication > Providers > Email > "Email OTP Length".
+export const OTP_LENGTH = 6
+export const otpOk = (code) => new RegExp(`^\\d{${OTP_LENGTH}}$`).test((code || '').trim())
+
 export const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v || '')
 
 /** US ABA routing-number checksum. */

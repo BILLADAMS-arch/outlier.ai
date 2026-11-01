@@ -1,4 +1,5 @@
 import { supabase, unwrap, rpc, camel, currentUserId } from '../lib/supabase'
+import { thenKick } from './mailer'
 
 export const getWorkspace = (assignmentId) => rpc('get_workspace', { p_assignment: assignmentId })
 export const saveWorkspace = (assignmentId, { data, progress, notes }, baseVersion, kind = 'auto') =>
@@ -51,4 +52,4 @@ export const listSubmissions = async (assignmentId) =>
   unwrap(await supabase.from('submissions').select('*, review_comments(id, kind, body, created_at, author_id)').eq('assignment_id', assignmentId).order('round', { ascending: false }))
 export const listAdjustments = async (assignmentId) =>
   unwrap(await supabase.from('time_adjustments').select('*').eq('assignment_id', assignmentId).order('created_at', { ascending: false }))
-export const rejectWork = (assignmentId, note) => rpc('reject_work', { p_assignment: assignmentId, p_note: note })
+export const rejectWork = (assignmentId, note) => rpc('reject_work', { p_assignment: assignmentId, p_note: note }).then(thenKick)

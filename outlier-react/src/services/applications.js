@@ -1,4 +1,5 @@
 import { supabase, unwrap, currentUserId } from '../lib/supabase'
+import { thenKick } from './mailer'
 
 const COLS = '*, tasks(title)'
 // Admins can read every row through RLS, so "mine" must filter by user explicitly.
@@ -15,5 +16,5 @@ export const withdraw = async (id) => unwrap(await supabase.from('applications')
 export async function review(id, { status, reviewerNote, agreedRate }) {
   const row = { status, reviewer_note: reviewerNote || '' }
   if (agreedRate != null) row.agreed_rate = agreedRate
-  return unwrap(await supabase.from('applications').update(row).eq('id', id))
+  return thenKick(unwrap(await supabase.from('applications').update(row).eq('id', id)))
 }

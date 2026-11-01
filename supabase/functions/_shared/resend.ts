@@ -17,6 +17,6 @@ export function configFromEnv(over: Partial<{ appUrl: string; supportEmail: stri
     supportEmail: Deno.env.get('SUPPORT_EMAIL') || over.supportEmail || Deno.env.get('EMAIL_REPLY_TO') || 'support@outlier.cfd',
     brand: Deno.env.get('BRAND_NAME') || 'Outlier',
     logoUrl: Deno.env.get('LOGO_URL') || `${appUrl.replace(/\/$/, '')}/images/outlier.png`,
-    otpMinutes: Number(Deno.env.get('OTP_EXPIRY_MINUTES') || 60),
+    otpMinutes: Number(Deno.env.get('OTP_EXPIRY_MINUTES') || 5),
   }
 }

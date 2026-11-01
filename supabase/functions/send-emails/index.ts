@@ -4,15 +4,27 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import { render } from '../_shared/templates.ts'
 import { configFromEnv, EmailError, sendViaResend } from '../_shared/resend.ts'
 
+const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret', 'Access-Control-Allow-Methods': 'POST, OPTIONS' }
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+// Allowed callers: the scheduler (x-cron-secret) or any signed-in user's token. The caller supplies no content: the function only
+// delivers rows that database triggers already queued, so letting the app "kick" it just makes delivery immediate.
 Deno.serve(async (req) => {
-  if (req.headers.get('x-cron-secret') !== Deno.env.get('CRON_SECRET') || !Deno.env.get('CRON_SECRET')) return new Response('Forbidden', { status: 403 })
+  if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS })
   const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+  const cron = Deno.env.get('CRON_SECRET')
+  let allowed = !!cron && req.headers.get('x-cron-secret') === cron
+  if (!allowed) {
+    const jwt = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '')
+    if (jwt) { const { data } = await sb.auth.getUser(jwt); allowed = !!data?.user }
+  }
+  if (!allowed) return new Response('Forbidden', { status: 403, headers: CORS })
   const { data: settings } = await sb.from('app_settings').select('key, value').in('key', ['app_url', 'support_email'])
   const s = Object.fromEntries((settings || []).map((r) => [r.key, r.value]))
   const cfg = configFromEnv({ appUrl: s.app_url, supportEmail: s.support_email })
 
   const { data: rows, error } = await sb.rpc('claim_emails', { p_limit: 25 })
-  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...CORS, 'Content-Type': 'application/json' } })
   let sent = 0, failed = 0
   for (const row of rows || []) {
     try {
@@ -27,6 +39,7 @@ Deno.serve(async (req) => {
       await sb.from('email_outbox').update({ status: dead ? 'dead' : 'failed', last_error: String((e as Error).message).slice(0, 500), next_attempt_at: new Date(Date.now() + row.attempts * 5 * 60_000).toISOString() }).eq('id', row.id)
       failed++
     }
+    await sleep(550) // stay under Resend's 2 requests/second limit
   }
-  return new Response(JSON.stringify({ claimed: rows?.length || 0, sent, failed }), { headers: { 'Content-Type': 'application/json' } })
+  return new Response(JSON.stringify({ claimed: rows?.length || 0, sent, failed }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
 })

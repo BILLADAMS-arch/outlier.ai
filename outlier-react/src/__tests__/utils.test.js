@@ -137,3 +137,13 @@ describe('csv and cell validation', () => {
     expect(validateCell({ type: 'select', options: ['x', 'y'] }, 'z')).toMatch(/one of/)
   })
 })
+
+import { OTP_LENGTH, otpOk } from '../utils/validation'
+describe('one-time codes', () => {
+  it('accept exactly six digits and nothing else', () => {
+    expect(OTP_LENGTH).toBe(6)
+    expect(otpOk('123456')).toBe(true)
+    expect(otpOk(' 123456 ')).toBe(true)
+    for (const bad of ['12345', '1234567', '12345678', 'abcdef', '12 456', '', null]) expect(otpOk(bad)).toBe(false)
+  })
+})

@@ -3,3 +3,6 @@
 supabase/functions/.env
 supabase/.env
 *.env.local
+
+# Supabase CLI local state
+supabase/.temp/
