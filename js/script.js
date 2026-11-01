@@ -172,7 +172,7 @@
 
     /* ---------- Layout ---------- */
     const NAV = [
-        ["home", "index.html", "fa-house", "Home"],
+        ["home", "dashboard.html", "fa-house", "Home"],
         ["market", "marketplace.html", "fa-store", "Marketplace"],
         ["applications", "applications.html", "fa-paper-plane", "My Applications"],
         ["tasks", "tasks.html", "fa-clipboard-list", "Projects"],

@@ -514,7 +514,7 @@
         const u = Market.auth.user;
         document.title = "Page not found - Outlier";
         main.append(u
-            ? empty("fa-circle-question", "Page not found", "We couldn't find the page you were looking for.", linkBtn("index.html", "Back to Home"))
+            ? empty("fa-circle-question", "Page not found", "We couldn't find the page you were looking for.", linkBtn("dashboard.html", "Back to Home"))
             : empty("fa-circle-question", "Page not found", "We couldn't find that page. If you're an administrator, sign in first.", h("div", { class: "actions-row" }, linkBtn("login.html?next=admin.html", "Sign in"), linkBtn("index.html", "Home", "secondary"))));
     }
 
