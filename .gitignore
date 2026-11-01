@@ -1,0 +1,5 @@
+
+# Edge Function secrets (never commit)
+supabase/functions/.env
+supabase/.env
+*.env.local

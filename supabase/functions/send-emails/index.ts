@@ -2,7 +2,7 @@
 // Retries failed sends with back-off (5 attempts), never sends the same outbox row twice (Idempotency-Key = row id).
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { render } from '../_shared/templates.ts'
-import { configFromEnv, sendViaResend } from '../_shared/resend.ts'
+import { configFromEnv, EmailError, sendViaResend } from '../_shared/resend.ts'
 
 Deno.serve(async (req) => {
   if (req.headers.get('x-cron-secret') !== Deno.env.get('CRON_SECRET') || !Deno.env.get('CRON_SECRET')) return new Response('Forbidden', { status: 403 })
@@ -21,7 +21,9 @@ Deno.serve(async (req) => {
       await sb.from('email_outbox').update({ status: 'sent', provider_id: id, sent_at: new Date().toISOString(), last_error: null, subject: mail.subject, delivery_status: 'accepted' }).eq('id', row.id)
       sent++
     } catch (e) {
-      const dead = row.attempts >= 5
+      // Permanent errors (bad address, unverified domain, bad key) are not retried; temporary ones back off 5, 10, 15, 20 minutes.
+      const retryable = !(e instanceof EmailError) || e.retryable
+      const dead = !retryable || row.attempts >= 5
       await sb.from('email_outbox').update({ status: dead ? 'dead' : 'failed', last_error: String((e as Error).message).slice(0, 500), next_attempt_at: new Date(Date.now() + row.attempts * 5 * 60_000).toISOString() }).eq('id', row.id)
       failed++
     }
