@@ -16,24 +16,25 @@ export default function PaymentSettings() {
 
   return (
     <>
-      <PageHeader title="Payment Settings">Add the US bank account where you want to be paid.</PageHeader>
+      <PageHeader title="Payment Settings">Payments are processed on the last Tuesday of every month to an eligible United States bank account or an eligible United States AirTM account.</PageHeader>
       <Loaded query={query}>
         {({ bank, tax }) => (
           <>
             <section>
-              <h2>US bank account</h2>
+              <h2>Payout account</h2>
               <div className="row-card">
                 <span className="tile"><Icon name="fa-building-columns" /></span>
                 <div className="grow">
                   {bank ? (
                     <>
-                      <h3>{bank.bankName} · {bank.accountType === 'checking' ? 'Checking' : 'Savings'} ••••{bank.accountLast4}</h3>
-                      <p>{bank.accountHolder} · Routing ••••{bank.routingLast4} · Added {fmtDate(bank.createdAt)}</p>
+                      {bank.method === 'airtm'
+                        ? <><h3>AirTM (United States) · {bank.displayMask}</h3><p>{bank.accountHolder} · Added {fmtDate(bank.createdAt)}</p></>
+                        : <><h3>{bank.bankName} · {bank.accountType === 'checking' ? 'Checking' : 'Savings'} ••••{bank.accountLast4}</h3><p>{bank.accountHolder} · Routing ••••{bank.routingLast4} · Added {fmtDate(bank.createdAt)}</p></>}
                       <p><StatusPill kind="bank" value={bank.status} />{bank.status === 'pending' && ' An administrator will verify this account before your first payout.'}{bank.reviewNote && ` Note: ${bank.reviewNote}`}</p>
                     </>
-                  ) : <><h3>No bank account</h3><p>Add a checking or savings account to receive payments.</p></>}
+                  ) : <><h3>No payout account</h3><p>Add an eligible US bank account or US AirTM account to receive payments.</p></>}
                 </div>
-                <button className="btn" onClick={() => setDialog('bank')}>{bank ? 'Replace account' : 'Add bank account'}</button>
+                <div className="inline-actions"><button className="btn" onClick={() => setDialog('bank')}>{bank?.method === 'bank' ? 'Replace bank account' : 'Add US bank account'}</button><button className="btn secondary" onClick={() => setDialog('airtm')}>{bank?.method === 'airtm' ? 'Replace AirTM account' : 'Add US AirTM account'}</button></div>
               </div>
               <div className="callout info">
                 Your routing and account numbers are sent over an encrypted connection straight to our secure server and stored encrypted. They are never kept in your browser, and only the last 4 digits are ever shown here. Changing the account requires verification again.
@@ -69,6 +70,12 @@ export default function PaymentSettings() {
                   account2: d.account !== d.account2 ? 'Account numbers do not match.' : '',
                 })}
                 onSubmit={async (d) => { await payoutApi.save(d); toast.success('Bank account saved. It is now pending verification.'); query.reload() }} />
+            )}
+            {dialog === 'airtm' && (
+              <FormDialog title="US AirTM account" intro="Only eligible United States AirTM accounts can receive payments. The email is stored encrypted and only a masked version is shown." confirmLabel="Save AirTM account" onClose={() => setDialog(null)}
+                fields={[{ name: 'name', label: 'Account holder name', required: true, maxLength: 100, autoComplete: 'name' }, { name: 'email', label: 'Email address of your AirTM account', type: 'email', required: true }, { name: 'us', label: 'This is a United States AirTM account that is in my name.', type: 'checkbox', required: true, requiredMessage: 'Only eligible United States AirTM accounts are supported.' }]}
+                validate={(d) => ({ name: d.name.length < 2 ? 'Enter the account holder name.' : '', email: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email) ? '' : 'Enter a valid email address.' })}
+                onSubmit={async (d) => { await payoutApi.saveAirtm(d); toast.success('AirTM account saved. It is now pending verification.'); query.reload() }} />
             )}
             {dialog === 'tax' && (
               <FormDialog title="Tax information" intro="Only the last 4 characters of your tax ID are stored." confirmLabel="Save" onClose={() => setDialog(null)}

@@ -23,15 +23,17 @@ export default function Onboarding() {
       {(a) => {
         if (!a) return <EmptyState icon="fa-circle-question" title="Project not found" action={<Link className="btn" to="/projects">My projects</Link>}>This project isn&apos;t assigned to you.</EmptyState>
         // Returning taskers (and projects past the working stage) skip onboarding.
-        if (a.onboardedAt || !['assigned', 'in_progress'].includes(a.status)) return <Navigate to={`/projects/${a.id}/work`} replace />
+        if (a.onboardedAt || !['assigned', 'in_progress'].includes(a.status)) return <Navigate to={`/workspace/project/${a.id}`} replace />
         const t = a.tasks
         const c = onboardingContent(t)
         async function complete() {
           setBusy(true)
           try {
             await assignmentsApi.ackOnboarding(a.id)
-            toast.success('Onboarding complete. You can start working now.')
-            navigate(`/projects/${a.id}/work`, { replace: true })
+            await assignmentsApi.startWork(a.id)
+            window.dispatchEvent(new Event('outlier:timer-changed'))
+            toast.success('Onboarding complete. Your working session has started.')
+            navigate(`/workspace/project/${a.id}`, { replace: true })
           } catch (e) {
             toast.error(e.message)
             setBusy(false)
@@ -58,7 +60,7 @@ export default function Onboarding() {
             <div className="panel">
               <label className="check"><input type="checkbox" checked={read} onChange={(e) => setRead(e.target.checked)} /><span>I have read and understood the project overview, objectives, instructions and expected deliverables.</span></label>
               <label className="check"><input type="checkbox" checked={guidelines} onChange={(e) => setGuidelines(e.target.checked)} /><span>I agree to follow the project guidelines and the payment terms above.</span></label>
-              <button className="btn big" disabled={!read || !guidelines || busy} onClick={complete}>{busy ? 'Saving…' : 'Complete onboarding and continue'}</button>
+              <button className="btn big" disabled={!read || !guidelines || busy} onClick={complete}>{busy ? 'Saving…' : 'Complete onboarding and start working'}</button>
             </div>
           </>
         )

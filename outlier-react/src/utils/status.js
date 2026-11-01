@@ -9,10 +9,11 @@ export const PROJECT_STATUS = {
   submitted: 'Submitted',
   completed: 'Completed',
   cancelled: 'Cancelled',
+  rejected: 'Rejected',
   declined: 'Application Not Selected',
 }
 export const APPLICATION_STATUS = { submitted: 'Pending', reviewing: 'Under review', accepted: 'Approved', rejected: 'Not selected', withdrawn: 'Withdrawn' }
-export const PAYMENT_STATUS = { pending: 'Awaiting approval', approved: 'Approved – to be paid', paid: 'Paid', rejected: 'Not approved' }
+export const PAYMENT_STATUS = { pending: 'Awaiting approval', approved: 'Approved for payment', processing: 'Processing', paid: 'Paid', failed: 'Failed', rejected: 'Not approved' }
 export const BANK_STATUS = { pending: 'Pending verification', verified: 'Verified', rejected: 'Rejected' }
 export const DIFFICULTIES = ['Easy', 'Intermediate', 'Hard', 'Expert']
 export const BANDS = { Easy: [10, 25], Intermediate: [25, 50], Hard: [50, 90], Expert: [90, 200] }

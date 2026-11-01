@@ -26,7 +26,7 @@ export default function AdminPayoutAccounts() {
             <div className="row-card" key={b.userId}>
               <div className="grow">
                 <h3>{nameOf(b.userId)}</h3>
-                <p>{b.accountHolder} · {b.bankName} · {b.accountType} ••••{b.accountLast4} · routing ••••{b.routingLast4} · added {fmtDate(b.createdAt)}</p>
+                <p>{b.accountHolder} · {b.method === 'airtm' ? `AirTM account ${b.displayMask}` : `${b.bankName} · ${b.accountType} ••••${b.accountLast4} · routing ••••${b.routingLast4}`} · added {fmtDate(b.createdAt)}</p>
                 {b.reviewNote && <p className="note">Note: {b.reviewNote}</p>}
               </div>
               <StatusPill kind="bank" value={b.status} />
@@ -40,7 +40,7 @@ export default function AdminPayoutAccounts() {
 
           {dialog && (
             <FormDialog title={dialog.status === 'verified' ? 'Verify bank account' : 'Reject bank account'} danger={dialog.status === 'rejected'} confirmLabel={dialog.status === 'verified' ? 'Verify' : 'Reject'} onClose={() => setDialog(null)}
-              intro={`${nameOf(dialog.b.userId)} · ${dialog.b.bankName} ••••${dialog.b.accountLast4}`}
+              intro={`${nameOf(dialog.b.userId)} · ${dialog.b.method === 'airtm' ? 'AirTM ' + dialog.b.displayMask : dialog.b.bankName + ' ••••' + dialog.b.accountLast4}`}
               fields={[{ name: 'note', label: dialog.status === 'rejected' ? 'Reason (shown to the tasker)' : 'Note (optional)', type: 'textarea', maxLength: 300, required: dialog.status === 'rejected' }]}
               onSubmit={async (d) => { await payoutApi.review(dialog.b.userId, dialog.status, d.note); toast.success(dialog.status === 'verified' ? 'Account verified.' : 'Account rejected.'); query.reload() }} />
           )}
@@ -50,8 +50,8 @@ export default function AdminPayoutAccounts() {
                 <h2>Bank account details</h2>
                 <p className="modal-intro">This view was recorded. Close it when you are done.</p>
                 <dl className="kv">
-                  <dt>Holder</dt><dd>{revealed.data.holder}</dd><dt>Bank</dt><dd>{revealed.data.bank}</dd><dt>Type</dt><dd>{revealed.data.type}</dd>
-                  <dt>Routing</dt><dd>{revealed.data.routing}</dd><dt>Account</dt><dd>{revealed.data.account}</dd>
+                  <dt>Holder</dt><dd>{revealed.data.holder}</dd><dt>Method</dt><dd>{revealed.data.method === 'airtm' ? 'AirTM' : 'US bank account'}</dd>
+                  {revealed.data.method === 'airtm' ? <><dt>AirTM email</dt><dd>{revealed.data.email}</dd></> : <><dt>Bank</dt><dd>{revealed.data.bank}</dd><dt>Type</dt><dd>{revealed.data.type}</dd><dt>Routing</dt><dd>{revealed.data.routing}</dd><dt>Account</dt><dd>{revealed.data.account}</dd></>}
                 </dl>
                 <div className="modal-actions"><button className="btn" onClick={() => setRevealed(null)}>Close</button></div>
               </div>

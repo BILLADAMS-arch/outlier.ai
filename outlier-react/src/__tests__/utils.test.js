@@ -79,3 +79,61 @@ describe('project status for a tasker', () => {
     expect(projectStatusFor('t2', [], [])).toBe('available')
   })
 })
+
+import { addDays, lastTuesday, mondayOf, monthEnd, addMonths } from '../utils/dates'
+describe('dates and payment day', () => {
+  it('finds the last Tuesday of any month, including year boundaries and leap years', () => {
+    expect(lastTuesday('2026-11-10')).toBe('2026-11-24')
+    expect(lastTuesday('2026-12-01')).toBe('2026-12-29')
+    expect(lastTuesday('2026-03-15')).toBe('2026-03-31')
+    expect(lastTuesday('2024-02-10')).toBe('2024-02-27')
+    expect(lastTuesday('2027-01-05')).toBe('2027-01-26')
+  })
+  it('uses Monday to Sunday weeks', () => {
+    expect(mondayOf('2026-11-04')).toBe('2026-11-02')
+    expect(mondayOf('2026-11-08')).toBe('2026-11-02')
+    expect(mondayOf('2026-11-09')).toBe('2026-11-09')
+    expect(addDays('2026-12-30', 3)).toBe('2027-01-02')
+  })
+  it('handles month boundaries', () => {
+    expect(monthEnd('2024-02-10')).toBe('2024-02-29')
+    expect(addMonths('2026-12-01', 1)).toBe('2027-01-01')
+  })
+})
+
+import { configFor, missingItems, progressPercent } from '../utils/workspaceTypes'
+import { formToConfig } from '../utils/workspaceConfig'
+import { parseCsv, toCsv, validateCell } from '../utils/csv'
+describe('workspace configuration', () => {
+  it('picks the working environment from the category unless the project overrides it', () => {
+    expect(configFor({ categoryId: 'translation' }).type).toBe('transcription')
+    expect(configFor({ categoryId: 'software' }).type).toBe('code')
+    expect(configFor({ categoryId: 'software', workspaceType: 'writing' }).type).toBe('writing')
+  })
+  it('reports missing deliverables and required subtasks', () => {
+    const cfg = configFor({ categoryId: 'writing' })
+    expect(missingItems(cfg, {}, {}, []).length).toBe(3)
+    expect(missingItems(cfg, { sections: { doc: 'some text' } }, { draft: true, review: true }, [])).toEqual([])
+    expect(progressPercent(cfg, { draft: true })).toBe(50)
+  })
+  it('turns admin form text into a configuration and rejects bad input', () => {
+    const c = formToConfig('data_entry', { tools: 'table, csv', subtasks: 'Enter rows | required\nCheck | optional', deliverables: 'Final table | section', columns: 'Name | text | required\nAge | number | optional', targetRows: '10', minWords: '', allowAudio: false, requirements: 'No blanks' })
+    expect(c.subtasks[1]).toEqual({ id: 'check', title: 'Check', required: false })
+    expect(c.requiredDeliverables[0]).toMatchObject({ kind: 'section', key: 'table' })
+    expect(c.columns[1]).toMatchObject({ key: 'age', type: 'number', required: false })
+    expect(() => formToConfig('data_entry', { tools: 'nonsense', subtasks: '', deliverables: '', columns: '', targetRows: '', minWords: '', allowAudio: false, requirements: '' })).toThrow(/Unknown tool/)
+  })
+})
+describe('csv and cell validation', () => {
+  it('round-trips quotes, commas and newlines', () => {
+    const cols = [{ key: 'a', label: 'A' }, { key: 'b', label: 'B' }]
+    const text = toCsv(cols, [{ a: 'x, y', b: 'say "hi"\nnow' }])
+    expect(parseCsv(text)).toEqual([['A', 'B'], ['x, y', 'say "hi"\nnow']])
+  })
+  it('validates typed cells', () => {
+    expect(validateCell({ type: 'number', required: true }, '')).toBe('Required')
+    expect(validateCell({ type: 'number' }, 'abc')).toBe('Must be a number')
+    expect(validateCell({ type: 'email' }, 'a@b.co')).toBe('')
+    expect(validateCell({ type: 'select', options: ['x', 'y'] }, 'z')).toMatch(/one of/)
+  })
+})

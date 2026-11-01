@@ -34,6 +34,15 @@ export function useTimer(assignmentId) {
     }
   }, [sync])
 
+  // While running, tell the server we are still here. If beats stop (tab closed, laptop asleep) the server stops counting.
+  const running = !!snap?.running
+  useEffect(() => {
+    if (!running) return undefined
+    const beat = () => assignments.heartbeat(assignmentId).then(apply, () => {})
+    const id = setInterval(beat, 60000)
+    return () => clearInterval(id)
+  }, [running, assignmentId, apply])
+
   useEffect(() => {
     const id = setInterval(() => setNow(performance.now()), 1000)
     return () => clearInterval(id)

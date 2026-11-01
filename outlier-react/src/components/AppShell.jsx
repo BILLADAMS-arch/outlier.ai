@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Icon } from './ui'
 import TimerBadge from './TimerBadge'
+import NotificationBell from './NotificationBell'
 
 const MEMBER_NAV = [
   ['/dashboard', 'fa-house', 'Dashboard'],
@@ -44,6 +45,7 @@ export default function AppShell() {
           <button className="icon-btn burger" aria-label="Toggle menu" aria-controls="sidebar" onClick={() => setOpen((o) => !o)}><Icon name="fa-bars" /></button>
           <div className="topbar-right">
             {(isApproved || isAdmin) && <TimerBadge userId={user?.id} />}
+            <NotificationBell userId={user?.id} />
             <span className="user-btn" title="Your registered name">
               <span className="avatar">{name.trim().charAt(0).toUpperCase()}</span>
               <span className="user-name">{name}</span>

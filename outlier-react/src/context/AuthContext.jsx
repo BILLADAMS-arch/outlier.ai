@@ -51,6 +51,10 @@ export function AuthProvider({ children }) {
       signIn: authService.signIn,
       signUp: authService.signUp,
       signOut: authService.signOut,
+      verifySignupCode: authService.verifySignupCode,
+      resendSignupCode: authService.resendSignupCode,
+      requestPasswordReset: authService.requestPasswordReset,
+      resetPasswordWithCode: authService.resetPasswordWithCode,
     }
   }, [session, userId, loaded, refreshProfile])
 
