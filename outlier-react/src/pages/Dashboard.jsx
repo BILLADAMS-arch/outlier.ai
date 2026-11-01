@@ -9,6 +9,7 @@ import { computeStats } from '../utils/stats'
 import { money, fmtDateTime, hms } from '../utils/format'
 import { EmptyState, Icon, Loaded, PageHeader, StatusPill } from '../components/ui'
 import ProjectRow from '../components/ProjectRow'
+import CountUp from '../components/CountUp'
 
 function Stat({ icon, label, value }) {
   return <div className="stat-card"><Icon name={icon} /><span>{label}</span><div className="value">{value}</div></div>
@@ -62,9 +63,9 @@ export default function Dashboard() {
           return (
             <>
               <section className="stats">
-                <Stat icon="fa-dollar-sign" label="Total Earnings" value={money(stats.totalEarnings)} />
-                <Stat icon="fa-list" label="Tasks Completed" value={stats.tasksCompleted} />
-                <Stat icon="fa-list-check" label="Avg. Tasks per Week" value={stats.avgPerWeek} />
+                <Stat icon="fa-dollar-sign" label="Total Earnings" value={<CountUp value={stats.totalEarnings} format={money} />} />
+                <Stat icon="fa-list" label="Tasks Completed" value={<CountUp value={stats.tasksCompleted} format={(n) => String(Math.round(n))} />} />
+                <Stat icon="fa-list-check" label="Avg. Tasks per Week" value={<CountUp value={stats.avgPerWeek} format={(n) => String(Math.round(n * 10) / 10)} />} />
               </section>
               {empty && (
                 <EmptyState icon="fa-store" title="No projects yet" action={<Link className="btn" to="/marketplace">Browse available projects</Link>}>

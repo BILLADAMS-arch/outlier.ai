@@ -1,8 +1,9 @@
-import { supabase, unwrap } from '../lib/supabase'
+import { supabase, unwrap, currentUserId } from '../lib/supabase'
 
 const COLS = '*, tasks(title)'
-export const listMine = async () => unwrap(await supabase.from('applications').select(COLS).order('created_at', { ascending: false }))
-export const listAll = listMine // RLS returns every application to admins and only your own to taskers
+// Admins can read every row through RLS, so "mine" must filter by user explicitly.
+export const listMine = async () => unwrap(await supabase.from('applications').select(COLS).eq('user_id', await currentUserId()).order('created_at', { ascending: false }))
+export const listAll = async () => unwrap(await supabase.from('applications').select(COLS).order('created_at', { ascending: false }))
 
 export async function apply({ taskId, note, availability, proposedRate }) {
   const { error } = await supabase.from('applications').insert({ task_id: taskId, note, availability, proposed_rate: proposedRate })

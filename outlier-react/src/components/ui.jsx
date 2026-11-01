@@ -4,6 +4,14 @@ export const Icon = ({ name, className = '' }) => <i className={`${name.includes
 
 export const Spinner = ({ label = 'Loading' }) => <div className="spinner" role="status" aria-label={label} />
 
+/** Shimmering placeholders shown while a page's data loads. */
+export const Skeleton = () => (
+  <div className="skel-wrap" role="status" aria-label="Loading">
+    <div className="skel title" />
+    <div className="skel card" /><div className="skel row" /><div className="skel row" />
+  </div>
+)
+
 export function EmptyState({ icon = 'fa-folder-open', title, children, action }) {
   return (
     <div className="empty">
@@ -28,7 +36,7 @@ export function ErrorState({ error, onRetry }) {
 
 /** Shows a spinner, error or the children once `query` (from useAsync) has loaded. */
 export function Loaded({ query, children }) {
-  if (query.loading) return <Spinner />
+  if (query.loading) return <Skeleton />
   if (query.error) return <ErrorState error={query.error} onRetry={query.reload} />
   return children(query.data)
 }

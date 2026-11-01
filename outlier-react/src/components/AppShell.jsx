@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Icon } from './ui'
 import TimerBadge from './TimerBadge'
@@ -18,6 +18,7 @@ export default function AppShell() {
   const { profile, user, isAdmin, isApproved, signOut } = useAuth()
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
   const items = MEMBER_NAV.filter(([, , , needsApproval]) => !needsApproval || isApproved || isAdmin)
   if (isAdmin) items.push(['/admin', 'fa-user-shield', 'Admin'])
   const name = profile?.displayName || ''
@@ -50,7 +51,7 @@ export default function AppShell() {
             <button className="btn secondary" onClick={async () => { await signOut(); navigate('/', { replace: true }) }}>Sign out</button>
           </div>
         </div>
-        <main className="main-content" id="main"><Outlet /></main>
+        <main className="main-content" id="main"><div key={location.pathname} className="page-enter"><Outlet /></div></main>
       </div>
       {open && <button className="nav-scrim" aria-label="Close menu" onClick={() => setOpen(false)} />}
     </div>

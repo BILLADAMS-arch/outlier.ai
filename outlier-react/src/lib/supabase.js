@@ -17,3 +17,11 @@ export function unwrap({ data, error }) {
   return camel(data)
 }
 export const rpc = async (name, args) => unwrap(await supabase.rpc(name, args))
+
+/** The signed-in user's id, from the locally stored session. */
+export async function currentUserId() {
+  const { data } = await supabase.auth.getSession()
+  const id = data.session?.user?.id
+  if (!id) throw new Error('You are not signed in.')
+  return id
+}

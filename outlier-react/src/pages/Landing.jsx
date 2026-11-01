@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { publicStats } from '../services/profiles'
+import { useReveal } from '../hooks/useReveal'
 
 // Unsplash photo ids (each was fetched and confirmed to return an image).
 const photo = (id, w, h) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${h}&q=70`
@@ -50,6 +51,7 @@ function Card({ card, stats }) {
 export default function Landing() {
   const { session } = useAuth()
   const [stats, setStats] = useState(null)
+  const howRef = useReveal()
   useEffect(() => {
     let off = false
     publicStats().then((s) => !off && s?.tasks && setStats(s), () => {})
@@ -91,7 +93,7 @@ export default function Landing() {
             )))}
           </div>
         </section>
-        <section className="lp-how" id="how">
+        <section className="lp-how reveal" id="how" ref={howRef}>
           <h2>How it works</h2>
           <ol>
             <li><b>Register</b> with your full name. An administrator reviews and approves your account.</li>

@@ -34,7 +34,7 @@ function Room({ assignment: a, reload }) {
 
   return (
     <>
-      <div className="timer-bar" role="timer" aria-label="Working timer">
+      <div className={`timer-bar${timer.running ? ' is-running' : ''}`} role="timer" aria-label="Working timer">
         <div>
           <span className="timer-label">Working time</span>
           <div className="timer-clock" aria-live="off">{timer.ready ? hms(timer.seconds) : '--:--:--'}</div>

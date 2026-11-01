@@ -1,14 +1,16 @@
-import { supabase, unwrap, rpc } from '../lib/supabase'
+import { supabase, unwrap, rpc, currentUserId } from '../lib/supabase'
 
 const TASK = 'tasks(id, title, category_id, image, difficulty, hourly_rate, estimated_hours)'
+const SELECT = `*, ${TASK}`
+// Admins can read every row through RLS, so "mine" must filter by user explicitly.
 export const listMine = async () =>
-  unwrap(await supabase.from('assignments').select(`*, ${TASK}`).order('created_at', { ascending: false }))
-export const listAll = listMine // admins receive every assignment through RLS
+  unwrap(await supabase.from('assignments').select(SELECT).eq('user_id', await currentUserId()).order('created_at', { ascending: false }))
+export const listAll = async () => unwrap(await supabase.from('assignments').select(SELECT).order('created_at', { ascending: false }))
 
 export const get = async (id) => unwrap(await supabase.from('assignments').select('*, tasks(*)').eq('id', id).maybeSingle())
 
 export const recentSegments = async (limit = 8) =>
-  unwrap(await supabase.from('time_segments').select('id, started_at, ended_at, assignments(id, tasks(title))').order('started_at', { ascending: false }).limit(limit))
+  unwrap(await supabase.from('time_segments').select('id, started_at, ended_at, assignments(id, tasks(title))').eq('user_id', await currentUserId()).order('started_at', { ascending: false }).limit(limit))
 export const activeSegments = async () =>
   unwrap(await supabase.from('time_segments').select('id, user_id, started_at, assignment_id, assignments(tasks(title))').is('ended_at', null))
 

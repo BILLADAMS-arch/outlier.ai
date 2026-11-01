@@ -4,6 +4,7 @@ import * as paymentsApi from '../services/payments'
 import * as assignmentsApi from '../services/assignments'
 import { fmtDate, hoursLabel, money } from '../utils/format'
 import { EmptyState, Icon, Loaded, PageHeader, StatusPill } from '../components/ui'
+import CountUp from '../components/CountUp'
 
 export default function Earnings() {
   const query = useAsync(async () => {
@@ -21,7 +22,7 @@ export default function Earnings() {
             <>
               <section className="stats">
                 {[['fa-circle-check', 'Approved earnings', sum('pending', 'approved', 'paid')], ['fa-money-bill-transfer', 'Paid out', sum('paid')], ['fa-hourglass-half', 'Approved, awaiting payout', sum('approved')], ['fa-clock', 'Awaiting payment approval', sum('pending')]].map(([ic, l, v]) => (
-                  <div className="stat-card" key={l}><Icon name={ic} /><span>{l}</span><div className="value">{money(v)}</div></div>
+                  <div className="stat-card" key={l}><Icon name={ic} /><span>{l}</span><div className="value"><CountUp value={v} format={money} /></div></div>
                 ))}
               </section>
               <section>
