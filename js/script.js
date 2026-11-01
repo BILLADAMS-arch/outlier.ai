@@ -191,7 +191,7 @@
 
     function buildShell(page) {
         const app = document.getElementById("app");
-        const nav = h("ul", {}, NAV.map(([key, href, ic, label]) => {
+        const nav = h("ul", {}, NAV.filter(([key]) => key !== "admin" || (window.Market && window.Market.auth.isAdmin())).map(([key, href, ic, label]) => {
             const n = navBadge(key);
             return h("li", {}, h("a", { href, class: key === page ? "active" : "", "aria-current": key === page ? "page" : null },
                 icon(ic), h("span", {}, label), n ? h("span", { class: "badge" }, n) : null,
@@ -354,13 +354,15 @@
 
     /* ---------- Pages ---------- */
     const pages = {
-        home(main) {
+        async home(main) {
+            let earned = totalEarnings();
+            if (window.Market && window.Market.auth.user) { await window.Market.init(); earned = window.Market.paidTotal(); }
             const hasPay = state.payments.length > 0;
             const hasTax = !!(state.tax.w9 || state.tax.general);
             main.append(
                 pageHeader(`Welcome, ${userName()}!`, "Here are the latest updates for Outlier"),
                 h("section", { class: "stats" },
-                    stat("fa-dollar-sign", "Total Earnings", money(totalEarnings())),
+                    stat("fa-dollar-sign", "Total Earnings", money(earned)),
                     stat("fa-list", "Tasks Completed", state.completed.length),
                     stat("fa-list-check", "Avg. Tasks per Week", avgPerWeek())));
 

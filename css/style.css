@@ -225,3 +225,12 @@ dt { color: var(--muted); } dd { font-weight: 600; text-align: right; }
 .field textarea { resize: vertical; }
 @media (max-width: 900px) { .detail-layout { grid-template-columns: 1fr; } .detail-side { position: static; } }
 @media (max-width: 600px) { .app-row .thumb { display: none; } .detail-main h1 { font-size: 1.5rem; } }
+
+/* ===== Work review & payments ===== */
+.status-approved, .pay-paid { background: #dcfce7; color: #15803d; }
+.status-revision, .pay-pending { background: #fef3c7; color: #b45309; }
+.pay-approved { background: #dbeafe; color: #1d4ed8; }
+.pay-rejected { background: #fee2e2; color: #b91c1c; }
+.work-block { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.sub-line { font-size: .88rem; }
+.actions-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }

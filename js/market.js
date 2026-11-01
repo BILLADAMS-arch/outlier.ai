@@ -9,6 +9,8 @@
     const { h, icon, openModal, confirmBox, toast, money, fmtDate, uid, empty, pageHeader, linkBtn } = O;
     const DIFFS = ["Easy", "Intermediate", "Hard", "Expert"];
     const STATUS = { submitted: "Submitted", reviewing: "Under review", accepted: "Accepted", rejected: "Not selected", withdrawn: "Withdrawn" };
+    const SUB_STATUS = { submitted: "Awaiting review", approved: "Work approved", revision: "Revision requested", rejected: "Rejected" };
+    const PAY_STATUS = { pending: "Awaiting approval", approved: "Approved – to be paid", paid: "Paid", rejected: "Not approved" };
     const AVAIL = ["Under 10 hours/week", "10–20 hours/week", "20–40 hours/week", "Full-time (40+ hours/week)"];
     const todayISO = () => new Date().toISOString().slice(0, 10);
 
@@ -68,7 +70,9 @@
         responsibilities: t.responsibilities, deliverables: t.deliverables, qualifications: t.qualifications, apply_instructions: t.applyInstructions,
         posted_at: t.postedAt, deadline: t.deadline || null, status: t.status
     });
-    const appFromRow = r => ({ taskTitle: (r.tasks && r.tasks.title) || "Task no longer listed", id: r.id, taskId: r.task_id, userId: r.user_id, status: r.status, note: r.note, availability: r.availability, proposedRate: r.proposed_rate == null ? null : Number(r.proposed_rate), reviewerNote: r.reviewer_note, createdAt: r.created_at, updatedAt: r.updated_at });
+    const appFromRow = r => ({ taskTitle: (r.tasks && r.tasks.title) || "Task no longer listed", id: r.id, taskId: r.task_id, userId: r.user_id, status: r.status, note: r.note, availability: r.availability, proposedRate: r.proposed_rate == null ? null : Number(r.proposed_rate), reviewerNote: r.reviewer_note, agreedRate: r.agreed_rate == null ? null : Number(r.agreed_rate), createdAt: r.created_at, updatedAt: r.updated_at });
+    const subFromRow = r => ({ id: r.id, applicationId: r.application_id, userId: r.user_id, hours: Number(r.hours_worked), summary: r.summary, link: r.link, status: r.status, reviewerNote: r.reviewer_note, createdAt: r.created_at, reviewedAt: r.reviewed_at });
+    const payFromRow = r => ({ id: r.id, submissionId: r.submission_id, userId: r.user_id, hours: Number(r.hours), rate: Number(r.hourly_rate), amount: Number(r.amount), status: r.status, reference: r.reference, note: r.note, approvedAt: r.approved_at, paidAt: r.paid_at, createdAt: r.created_at });
 
     /* ---------- Data layer (in-memory cache backed by Supabase) ---------- */
     let cache = null;
@@ -80,18 +84,24 @@
         await auth.ready();
         if (cache) return cache;
         const c = client();
-        const [cats, tasks, apps] = await Promise.all([
+        const [cats, tasks, apps, subs, pays] = await Promise.all([
             c.from("categories").select("*").order("name"),
             c.from("tasks").select("*").order("posted_at", { ascending: false }).order("title"),
-            auth.user ? c.from("applications").select("*, tasks(title)").order("created_at", { ascending: false }) : Promise.resolve({ data: [] })
+            auth.user ? c.from("applications").select("*, tasks(title)").order("created_at", { ascending: false }) : Promise.resolve({ data: [] }),
+            auth.user ? c.from("work_submissions").select("*").order("created_at", { ascending: false }) : Promise.resolve({ data: [] }),
+            auth.user ? c.from("payments").select("*").order("created_at", { ascending: false }) : Promise.resolve({ data: [] })
         ]);
+        // Tolerate a database that hasn't had supabase/002_work_and_payments.sql applied yet.
+        const missing = e => e && (e.code === "PGRST205" || /schema cache/i.test(e.message || ""));
+        if (missing(subs.error)) subs.data = []; else check(subs.error, "Could not load work submissions");
+        if (missing(pays.error)) pays.data = []; else check(pays.error, "Could not load payments");
         check(cats.error, "Could not load categories"); check(tasks.error, "Could not load tasks"); check(apps.error, "Could not load applications");
         const names = {};
         if (auth.isAdmin()) {
             const p = await c.from("profiles").select("id, display_name"); check(p.error, "Could not load applicants");
             p.data.forEach(x => { names[x.id] = x.display_name; });
         }
-        cache = { categories: cats.data, tasks: tasks.data.map(taskFromRow), applications: apps.data.map(appFromRow), names };
+        cache = { categories: cats.data, tasks: tasks.data.map(taskFromRow), applications: apps.data.map(appFromRow), submissions: subs.data.map(subFromRow), payments: pays.data.map(payFromRow), names };
         setBadge();
         return cache;
     }
@@ -135,9 +145,35 @@
             const na = appFromRow(data); const tt = Market.task(a.taskId); if (tt) na.taskTitle = tt.title; cache.applications.unshift(na); setBadge();
         },
         async updateApplication(id, patch) {
-            const row = {}; if (patch.status) row.status = patch.status; if (patch.reviewerNote != null) row.reviewer_note = patch.reviewerNote;
+            const row = {}; if (patch.status) row.status = patch.status; if (patch.reviewerNote != null) row.reviewer_note = patch.reviewerNote; if (patch.agreedRate != null) row.agreed_rate = patch.agreedRate;
             const { data, error } = await client().from("applications").update(row).eq("id", id).select().single(); check(error, "Could not update application");
             const i = cache.applications.findIndex(x => x.id === id); const na = appFromRow(data); na.taskTitle = cache.applications[i].taskTitle; cache.applications[i] = na; setBadge();
+        },
+        mySubmissions: () => (cache && auth.user ? cache.submissions.filter(x => x.userId === auth.user.id) : []),
+        allSubmissions: () => cache.submissions,
+        myPayments: () => (cache && auth.user ? cache.payments.filter(x => x.userId === auth.user.id) : []),
+        allPayments: () => cache.payments,
+        paidTotal: () => Market.myPayments().filter(p => p.status === "paid").reduce((t, p) => t + p.amount, 0),
+        userName: id => cache.names[id] || (auth.user && id === auth.user.id ? auth.user.name : "Worker"),
+        async submitWork(applicationId, w) {
+            const { data, error } = await client().from("work_submissions").insert({ application_id: applicationId, hours_worked: w.hours, summary: w.summary, link: w.link || null }).select().single();
+            if (error && error.code === "23505") throw new Error("You already have work awaiting review or approved for this task.");
+            check(error, "Could not submit work");
+            cache.submissions.unshift(subFromRow(data));
+        },
+        async reviewSubmission(id, status, note) {
+            const { data, error } = await client().from("work_submissions").update({ status, reviewer_note: note }).eq("id", id).select().single(); check(error, "Could not review work");
+            const i = cache.submissions.findIndex(x => x.id === id); cache.submissions[i] = subFromRow(data);
+            await Market.reloadPayments();
+        },
+        async reloadPayments() {
+            const { data, error } = await client().from("payments").select("*").order("created_at", { ascending: false }); check(error, "Could not load payments");
+            cache.payments = data.map(payFromRow);
+        },
+        async reviewPayment(id, patch) {
+            const row = { status: patch.status, note: patch.note || "" }; if (patch.reference != null) row.reference = patch.reference;
+            const { data, error } = await client().from("payments").update(row).eq("id", id).select().single(); check(error, "Could not update payment");
+            const i = cache.payments.findIndex(x => x.id === id); cache.payments[i] = payFromRow(data);
         },
         async importSeed() {
             const res = await fetch("data/tasks.json"); if (!res.ok) throw new Error("Could not load data/tasks.json");
@@ -372,12 +408,67 @@
                     h("div", { class: "grow" },
                         h("h3", {}, t ? h("a", { href: "task.html?id=" + t.id }, a.taskTitle) : a.taskTitle),
                         h("p", {}, `Applied ${fmtDate(a.createdAt)} · ${a.availability}` + (t ? ` · ${rateText(t)}${a.proposedRate ? ` (proposed ${money(a.proposedRate)}/hr)` : ""}` : "")),
-                        a.reviewerNote ? h("p", { class: "note" }, "Reviewer: " + a.reviewerNote) : null),
+                        a.reviewerNote ? h("p", { class: "note" }, "Reviewer: " + a.reviewerNote) : null,
+                        a.status === "accepted" ? workBlock(a) : null),
                     statusPill(a.status),
                     a.status === "submitted" || a.status === "reviewing" ? h("button", { class: "btn secondary", onclick: () => confirmBox("Withdraw application?", "You can apply again later while the task is open.", "Withdraw", async () => { await Market.updateApplication(a.id, { status: "withdrawn" }); toast("Application withdrawn."); O.render(); }) }, "Withdraw") : null);
             }));
         }
         main.append(tabs, list); paint();
+    };
+
+    function workBlock(a) {
+        const subs = Market.mySubmissions().filter(x => x.applicationId === a.id);
+        const open = subs.find(x => x.status === "submitted" || x.status === "approved");
+        const rate = a.agreedRate || a.proposedRate || (Market.task(a.taskId) || {}).hourlyRate;
+        return h("div", { class: "work-block" },
+            h("p", {}, h("strong", {}, `Agreed rate: ${money(rate)}/hr`)),
+            ...subs.map(x => {
+                const pay = Market.myPayments().find(p => p.submissionId === x.id);
+                return h("p", { class: "sub-line" }, `${fmtDate(x.createdAt)} · ${x.hours} h · `, h("span", { class: `status status-${x.status}` }, SUB_STATUS[x.status]),
+                    pay ? [" → ", h("span", { class: `status pay-${pay.status}` }, `${money(pay.amount)} ${PAY_STATUS[pay.status]}`)] : null,
+                    x.reviewerNote ? h("em", {}, " – " + x.reviewerNote) : null);
+            }),
+            open ? null : h("button", { class: "btn", onclick: () => submitWorkModal(a, rate) }, subs.length ? "Submit revised work" : "Submit work"));
+    }
+    function submitWorkModal(a, rate) {
+        openModal({
+            title: `Submit work: ${a.taskTitle}`, intro: `Payment = hours × your agreed rate of ${money(rate)}/hr, after the work and payment are approved.`,
+            fields: [
+                { name: "hours", label: "Hours worked", type: "number", min: 0.5, max: 500, step: 0.5, required: true, inputmode: "decimal" },
+                { name: "summary", label: "What did you complete?", type: "textarea", required: true, maxlength: 2000, hint: "20–2000 characters." },
+                { name: "link", label: "Link to deliverables (optional)", type: "url", placeholder: "https://…" }
+            ],
+            validate: d => ({
+                ...(!(Number(d.hours) > 0 && Number(d.hours) <= 500 && Math.round(Number(d.hours) * 2) === Number(d.hours) * 2) ? { hours: "Enter hours in steps of 0.5, up to 500." } : {}),
+                ...(d.summary.length < 20 ? { summary: `Please write at least 20 characters (${d.summary.length} so far).` } : {}),
+                ...(d.link && !/^https?:\/\/\S+$/i.test(d.link) ? { link: "Enter a link starting with http:// or https://." } : {})
+            }),
+            confirm: "Submit for review",
+            onSubmit: async d => { await Market.submitWork(a.id, { hours: Number(d.hours), summary: d.summary, link: d.link }); O.notify(`Work submitted for “${a.taskTitle}”.`); O.save(); toast("Work submitted for review."); O.render(); }
+        });
+    }
+
+    /* ---------- Earnings (real payments) ---------- */
+    O.pages.earnings = async function (main) {
+        await init();
+        if (!Market.auth.user) {
+            main.append(pageHeader("Your Earnings", "Track your earnings and payouts."), h("div", { class: "banner info" }, "Sign in to see payments for approved work. ", h("a", { href: "login.html?next=earnings.html" }, "Sign in")));
+            return;
+        }
+        const pays = Market.myPayments(), sum = st => pays.filter(p => p.status === st).reduce((t, p) => t + p.amount, 0);
+        main.append(pageHeader("Your Earnings", "Payments are created when your work is approved, then approved and paid by an admin."),
+            h("section", { class: "stats" },
+                h("div", { class: "stat-card" }, icon("fa-circle-check"), h("span", {}, "Paid"), h("div", { class: "value" }, money(sum("paid")))),
+                h("div", { class: "stat-card" }, icon("fa-hourglass-half"), h("span", {}, "Approved, awaiting payout"), h("div", { class: "value" }, money(sum("approved")))),
+                h("div", { class: "stat-card" }, icon("fa-clock"), h("span", {}, "Awaiting approval"), h("div", { class: "value" }, money(sum("pending"))))),
+            h("section", {}, h("h2", {}, "Payments"), pays.length ? h("div", { class: "table-wrap" }, h("table", {},
+                h("thead", {}, h("tr", {}, ["Date", "Task", "Hours", "Rate", "Amount", "Status", "Reference"].map(t => h("th", { scope: "col" }, t)))),
+                h("tbody", {}, pays.map(p => {
+                    const sub = Market.mySubmissions().find(x => x.id === p.submissionId), app = sub && Market.myApplications().find(a => a.id === sub.applicationId);
+                    return h("tr", {}, h("td", {}, fmtDate(p.createdAt)), h("td", {}, app ? app.taskTitle : "—"), h("td", {}, p.hours), h("td", {}, money(p.rate) + "/hr"), h("td", {}, h("strong", {}, money(p.amount))),
+                        h("td", {}, h("span", { class: `status pay-${p.status}` }, PAY_STATUS[p.status])), h("td", {}, p.reference || "—"));
+                })))) : empty("fa-receipt", "No payments yet", "Once an admin approves work you've submitted, the payment shows up here.", linkBtn("applications.html", "Go to My Applications"))));
     };
 
     /* ---------- Sign in / sign up ---------- */
@@ -421,10 +512,10 @@
     /* ---------- Admin ---------- */
     function noAccess(main) {
         const u = Market.auth.user;
-        main.append(pageHeader("Admin", "Marketplace administration"));
+        document.title = "Page not found - Outlier";
         main.append(u
-            ? empty("fa-user-lock", "Admin access required", `You're signed in as ${u.email} without the admin role. An existing admin (or the project owner, in the Supabase SQL editor) can grant it with: update public.profiles set role = 'admin' where id = '${u.id}';`)
-            : empty("fa-lock", "Sign in required", "Sign in with an admin account to manage the marketplace.", linkBtn("login.html?next=admin.html", "Sign in")));
+            ? empty("fa-circle-question", "Page not found", "We couldn't find the page you were looking for.", linkBtn("index.html", "Back to Home"))
+            : empty("fa-circle-question", "Page not found", "We couldn't find that page. If you're an administrator, sign in first.", h("div", { class: "actions-row" }, linkBtn("login.html?next=admin.html", "Sign in"), linkBtn("index.html", "Home", "secondary"))));
     }
 
     O.pages.admin = async function (main) {
@@ -436,9 +527,9 @@
         const tabs = h("div", { class: "tabs wrap" });
         const body = h("div", {});
         main.append(tabs, body);
-        const views = { tasks: adminTasks, categories: adminCategories, applications: adminApplications };
+        const views = { tasks: adminTasks, categories: adminCategories, applications: adminApplications, work: adminWork, payments: adminPayments };
         function paint() {
-            tabs.replaceChildren(...[["tasks", "Tasks"], ["categories", "Categories"], ["applications", "Applications"]].map(([k, l]) =>
+            tabs.replaceChildren(...[["tasks", "Tasks"], ["categories", "Categories"], ["applications", "Applications"], ["work", "Work review" + countOf(Market.allSubmissions(), "submitted")], ["payments", "Payments" + countOf(Market.allPayments(), "pending", "approved")]].map(([k, l]) =>
                 h("button", { class: "tab-link" + (k === tab ? " active" : ""), onclick: () => { tab = k; sessionStorage.setItem("outlier.admin.tab", k); paint(); } }, l)));
             body.replaceChildren(); views[tab](body, paint);
         }
@@ -592,6 +683,69 @@
         });
     }
 
+    const countOf = (rows, ...st) => { const n = rows.filter(r => st.includes(r.status)).length; return n ? ` (${n})` : ""; };
+
+    function adminWork(body, repaint) {
+        let filter = "submitted";
+        const sel = h("select", { "aria-label": "Filter", onchange: e => { filter = e.target.value; draw(); } }, [["submitted", "Awaiting review"], ["all", "All"], ["approved", "Approved"], ["revision", "Revision requested"], ["rejected", "Rejected"]].map(([v, l]) => h("option", { value: v }, l)));
+        const wrap = h("div", {}); body.append(h("div", { class: "toolbar" }, sel), wrap);
+        function draw() {
+            const rows = Market.allSubmissions().filter(x => filter === "all" || x.status === filter);
+            wrap.replaceChildren(...(rows.length ? rows.map(x => {
+                const a = Market.allApplications().find(y => y.id === x.applicationId);
+                const rate = a && (a.agreedRate || a.proposedRate || (Market.task(a.taskId) || {}).hourlyRate);
+                return h("div", { class: "row-card app-row" },
+                    h("div", { class: "grow" }, h("h3", {}, a ? a.taskTitle : "Task"), h("p", {}, `${Market.userName(x.userId)} · ${fmtDate(x.createdAt)} · ${x.hours} h × ${money(rate || 0)}/hr = ${money(x.hours * (rate || 0))}`),
+                        h("p", { class: "note" }, x.summary), x.link ? h("p", {}, h("a", { href: x.link, target: "_blank", rel: "noopener noreferrer" }, "Open deliverables")) : null, x.reviewerNote ? h("p", { class: "note" }, "Your note: " + x.reviewerNote) : null),
+                    h("span", { class: `status status-${x.status}` }, SUB_STATUS[x.status]),
+                    x.status === "submitted" ? h("button", { class: "btn", onclick: () => reviewWork(x) }, "Review") : null);
+            }) : [empty("fa-inbox", "Nothing here", "No submissions match this filter.")]));
+        }
+        function reviewWork(x) {
+            openModal({
+                title: "Review submitted work", intro: "Approving creates a payment for you to approve in the Payments tab.",
+                fields: [{ name: "status", label: "Decision", type: "select", options: ["approved", "revision", "rejected"] }, { name: "note", label: "Note to worker (optional)", type: "textarea", maxlength: 300 }],
+                validate: d => d.status !== "approved" && !d.note ? { note: "Add a note explaining what needs to change." } : {},
+                onSubmit: async d => { await Market.reviewSubmission(x.id, d.status, d.note); toast(d.status === "approved" ? "Work approved. A payment is awaiting your approval." : "Review saved."); repaint(); }
+            });
+        }
+        draw();
+    }
+
+    function adminPayments(body, repaint) {
+        let filter = "action";
+        const sel = h("select", { "aria-label": "Filter", onchange: e => { filter = e.target.value; draw(); } }, [["action", "Needs action"], ["all", "All"], ...Object.entries(PAY_STATUS)].map(([v, l]) => h("option", { value: v }, l)));
+        const wrap = h("div", {}); body.append(h("div", { class: "toolbar" }, sel), wrap);
+        const total = rows => rows.reduce((t, p) => t + p.amount, 0);
+        function draw() {
+            const all = Market.allPayments();
+            const rows = all.filter(p => filter === "all" || (filter === "action" ? p.status === "pending" || p.status === "approved" : p.status === filter));
+            wrap.replaceChildren(h("p", { class: "muted" }, `Pending approval ${money(total(all.filter(p => p.status === "pending")))} · Approved, unpaid ${money(total(all.filter(p => p.status === "approved")))} · Paid ${money(total(all.filter(p => p.status === "paid")))}`),
+                ...(rows.length ? rows.map(p => {
+                    const sub = Market.allSubmissions().find(x => x.id === p.submissionId), a = sub && Market.allApplications().find(y => y.id === sub.applicationId);
+                    return h("div", { class: "row-card app-row" },
+                        h("div", { class: "grow" }, h("h3", {}, `${money(p.amount)} · ${Market.userName(p.userId)}`), h("p", {}, `${a ? a.taskTitle : "Task"} · ${p.hours} h × ${money(p.rate)}/hr · ${fmtDate(p.createdAt)}`),
+                            p.reference ? h("p", { class: "note" }, "Reference: " + p.reference) : null),
+                        h("span", { class: `status pay-${p.status}` }, PAY_STATUS[p.status]),
+                        p.status === "pending" ? [h("button", { class: "btn", onclick: () => decide(p, "approved") }, "Approve payment"), h("button", { class: "btn secondary danger-text", onclick: () => decide(p, "rejected") }, "Reject")] : null,
+                        p.status === "approved" ? h("button", { class: "btn", onclick: () => markPaid(p) }, "Mark as paid") : null);
+                }) : [empty("fa-money-bill-wave", "Nothing here", "No payments match this filter.")]));
+        }
+        function decide(p, status) {
+            openModal({ title: status === "approved" ? `Approve payment of ${money(p.amount)}?` : "Reject payment?", intro: status === "approved" ? "This authorises the payout. You'll record the transfer afterwards with “Mark as paid”." : "The worker will see this payment as not approved.",
+                danger: status === "rejected", confirm: status === "approved" ? "Approve" : "Reject",
+                fields: [{ name: "note", label: status === "rejected" ? "Reason" : "Note (optional)", type: "textarea", maxlength: 300, required: status === "rejected" }],
+                onSubmit: async d => { await Market.reviewPayment(p.id, { status, note: d.note }); toast(status === "approved" ? "Payment approved." : "Payment rejected."); repaint(); } });
+        }
+        function markPaid(p) {
+            openModal({ title: `Mark ${money(p.amount)} as paid`, intro: "Only do this after the money has actually been sent (bank, PayPal, AirTM). This app does not send money.",
+                fields: [{ name: "reference", label: "Payment reference / transaction ID", required: true, maxlength: 120 }],
+                validate: d => d.reference.length < 3 ? { reference: "Enter the transaction reference (3+ characters)." } : {}, confirm: "Mark as paid",
+                onSubmit: async d => { await Market.reviewPayment(p.id, { status: "paid", reference: d.reference, note: p.note }); toast("Payment marked as paid."); repaint(); } });
+        }
+        draw();
+    }
+
     function adminApplications(body, repaint) {
         const apps = Market.allApplications();
         if (!apps.length) { body.append(empty("fa-inbox", "No applications yet", "Applications from the marketplace will appear here for review.")); return; }
@@ -610,11 +764,14 @@
             }) : [empty("fa-inbox", "Nothing here", "No applications match this filter.")]));
         }
         function review(a) {
+            const t = Market.task(a.taskId);
             openModal({
                 title: "Review application", intro: `${a.taskTitle}: “${a.note}”`,
                 fields: [{ name: "status", label: "Decision", type: "select", options: ["reviewing", "accepted", "rejected"], value: a.status === "submitted" ? "reviewing" : a.status },
+                         { name: "rate", label: "Agreed hourly rate (USD) – used when accepting", type: "number", min: 10, max: 200, step: 1, value: a.agreedRate || a.proposedRate || (t && t.hourlyRate), hint: "Payments are hours worked × this rate." },
                          { name: "note", label: "Note to applicant (optional)", type: "textarea", maxlength: 300, value: a.reviewerNote }],
-                onSubmit: async d => { await Market.updateApplication(a.id, { status: d.status, reviewerNote: d.note }); toast("Application updated."); repaint(); }
+                validate: d => d.status === "accepted" && !(Number.isInteger(Number(d.rate)) && Number(d.rate) >= 10 && Number(d.rate) <= 200) ? { rate: "Enter a whole number from 10 to 200." } : {},
+                onSubmit: async d => { await Market.updateApplication(a.id, { status: d.status, reviewerNote: d.note, agreedRate: d.status === "accepted" ? Number(d.rate) : null }); toast("Application updated."); repaint(); }
             });
         }
         draw();
