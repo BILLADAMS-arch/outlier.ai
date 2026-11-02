@@ -1,7 +1,7 @@
 import { supabase, unwrap, rpc, currentUserId } from '../lib/supabase'
 import { thenKick } from './mailer'
 
-const TASK = 'tasks(id, title, category_id, image, difficulty, hourly_rate, estimated_hours, workspace_type, workspace_config)'
+const TASK = 'tasks(id, title, category_id, image, difficulty, hourly_rate, estimated_hours, deadline, workspace_type, workspace_config)'
 const SELECT = `*, ${TASK}`
 // Admins can read every row through RLS, so "mine" must filter by user explicitly.
 // Attaches each project's saved progress so dashboards can show completion percentages.

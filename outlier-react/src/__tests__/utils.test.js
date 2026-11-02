@@ -164,3 +164,27 @@ describe('password strength indicator', () => {
     expect(passwordStrength('Correct-Horse-Battery9').label).toBe('Strong')
   })
 })
+
+import { activityWeeks, completedTrend, earningsTrend } from '../utils/stats'
+import { durationLabel, initials } from '../utils/format'
+describe('dashboard trends use real records only', () => {
+  const now = Date.parse('2026-11-12T12:00:00Z') // a Thursday
+  it('compares this month with last month and refuses to invent a percentage from zero', () => {
+    const p = [{ amount: 150, status: 'paid', createdAt: '2026-11-03T10:00:00Z' }, { amount: 100, status: 'approved', createdAt: '2026-10-20T10:00:00Z' }, { amount: 50, status: 'rejected', createdAt: '2026-11-04T10:00:00Z' }]
+    expect(earningsTrend(p, now)).toEqual({ thisMonth: 150, lastMonth: 100, change: 50 })
+    expect(earningsTrend([{ amount: 80, status: 'paid', createdAt: '2026-11-03T10:00:00Z' }], now).change).toBeNull()
+    expect(earningsTrend([], now)).toEqual({ thisMonth: 0, lastMonth: 0, change: null })
+  })
+  it('compares completed projects this week and last week (Monday to Sunday)', () => {
+    const a = [{ status: 'completed', completedAt: '2026-11-10T09:00:00Z' }, { status: 'completed', completedAt: '2026-11-09T00:30:00Z' }, { status: 'completed', completedAt: '2026-11-03T09:00:00Z' }, { status: 'in_progress', completedAt: null }]
+    expect(completedTrend(a, now)).toEqual({ thisWeek: 2, lastWeek: 1, change: 100 })
+    expect(completedTrend([], now).change).toBeNull()
+  })
+  it('counts weeks of activity and formats durations and initials', () => {
+    expect(activityWeeks([], now)).toBe(0)
+    expect(activityWeeks([{ createdAt: '2026-11-10T00:00:00Z' }], now)).toBe(1)
+    expect(activityWeeks([{ createdAt: '2026-10-20T00:00:00Z' }], now)).toBe(4)
+    expect(durationLabel(5400)).toBe('1h 30m'); expect(durationLabel(540)).toBe('9m'); expect(durationLabel(45)).toBe('45s'); expect(durationLabel(7200)).toBe('2h 00m')
+    expect(initials('Ada Lovelace')).toBe('AL'); expect(initials('  madonna ')).toBe('M'); expect(initials('')).toBe('?')
+  })
+})

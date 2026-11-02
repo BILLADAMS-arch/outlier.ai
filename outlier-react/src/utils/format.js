@@ -19,3 +19,11 @@ export const hoursLabel = (seconds) => `${((seconds || 0) / 3600).toFixed(2)} h`
 export const earningsFor = (seconds, rate) => Math.round(((seconds || 0) * Number(rate || 0)) / 3600 * 100) / 100
 
 export const rateTier = (r) => (r < 25 ? 'Beginner' : r < 50 ? 'Intermediate' : r < 90 ? 'Advanced' : r < 140 ? 'Expert' : 'Specialist')
+
+/** 5400 -> "1h 30m", 540 -> "9m", 45 -> "45s" */
+export function durationLabel(totalSeconds) {
+  const s = Math.max(0, Math.round(totalSeconds || 0))
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60)
+  return h ? `${h}h ${String(m).padStart(2, '0')}m` : m ? `${m}m` : `${s}s`
+}
+export const initials = (name = '') => name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() || '').join('') || '?'

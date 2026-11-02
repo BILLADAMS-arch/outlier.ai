@@ -8,6 +8,8 @@ import './styles/app.css'
 import './styles/landing.css'
 import './styles/motion.css'
 import './styles/auth.css'
+import './styles/shell.css'
+import './styles/dashboard.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

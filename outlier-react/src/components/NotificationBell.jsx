@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import * as notificationsApi from '../services/notifications'
 import { fmtDateTime } from '../utils/format'
-import { Icon } from './ui'
+import LIcon from './LIcon'
 
 /** In-app notification centre: polls while the page is open and when the tab regains focus. */
 export default function NotificationBell({ userId }) {
@@ -32,12 +32,12 @@ export default function NotificationBell({ userId }) {
     if (n.link) navigate(n.link)
   }
   return (
-    <div className="pop-wrap" ref={box}>
-      <button className="icon-btn" aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`} aria-haspopup="true" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        <Icon name="fa-bell" />{unread > 0 && <span className="dot">{unread > 9 ? '9+' : unread}</span>}
+    <div className="sh-pop" ref={box}>
+      <button type="button" className="sh-icon" aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`} aria-haspopup="true" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <LIcon name="bell" size={20} />{unread > 0 && <span className="sh-badge">{unread > 9 ? '9+' : unread}</span>}
       </button>
       {open && (
-        <div className="popover">
+        <div className="sh-menu wide">
           <div className="popover-head"><strong>Notifications</strong>{unread > 0 && <button className="link-btn" onClick={async () => { await notificationsApi.markRead(null); load() }}>Mark all read</button>}</div>
           {items.length ? (
             <ul>{items.map((n) => (
