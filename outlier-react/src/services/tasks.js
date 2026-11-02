@@ -13,7 +13,7 @@ const toRow = (t) => ({
   currency: 'USD', rate_type: t.rateType, estimated_hours: t.estimatedHours, experience: t.experience, skills: t.skills,
   summary: t.summary, description: t.description, responsibilities: t.responsibilities, deliverables: t.deliverables,
   qualifications: t.qualifications, apply_instructions: t.applyInstructions, objectives: t.objectives,
-  instructions: t.instructions || null, guidelines: t.guidelines, workspace_type: t.workspaceType || null, workspace_config: t.workspaceConfig || {}, posted_at: t.postedAt, deadline: t.deadline || null, status: t.status,
+  instructions: t.instructions || null, guidelines: t.guidelines, workspace_type: t.workspaceType || null, workspace_config: t.workspaceConfig || {}, reference_links: t.referenceLinks || [], posted_at: t.postedAt, deadline: t.deadline || null, status: t.status,
 })
 export const saveTask = async (t) => unwrap(await supabase.from('tasks').upsert(toRow(t)).select().single())
 export const deleteTask = async (id) => unwrap(await supabase.from('tasks').delete().eq('id', id))

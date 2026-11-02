@@ -188,3 +188,16 @@ describe('dashboard trends use real records only', () => {
     expect(initials('Ada Lovelace')).toBe('AL'); expect(initials('  madonna ')).toBe('M'); expect(initials('')).toBe('?')
   })
 })
+
+import { formatRefLinks, parseRefLinks } from '../utils/refLinks'
+describe('reference links', () => {
+  it('round-trips and validates', () => {
+    const l = parseRefLinks('Docs | https://example.com/a | reference\nEditor | https://example.com/b | tool\nBare | https://example.com/c')
+    expect(l.map((x) => x.kind)).toEqual(['reference', 'tool', 'reference'])
+    expect(parseRefLinks(formatRefLinks(l))).toEqual(l)
+    expect(parseRefLinks('')).toEqual([])
+    expect(() => parseRefLinks('No link | http://insecure.example')).toThrow(/https/)
+    expect(() => parseRefLinks(' | https://x.example')).toThrow(/title/)
+    expect(() => parseRefLinks('A | https://x.example | other')).toThrow(/type/)
+  })
+})

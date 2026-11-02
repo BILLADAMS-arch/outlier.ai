@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import RefLinks from '../components/RefLinks'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useAsync } from '../hooks/useAsync'
 import * as assignmentsApi from '../services/assignments'
@@ -56,6 +57,7 @@ export default function Onboarding() {
               </dl>
               <p className="muted">You are paid for approved tracked working time: approved hours × your hourly rate.</p>
             </div>
+            {t.referenceLinks?.length > 0 && <div className="panel"><h2>References and tools</h2><RefLinks links={t.referenceLinks} /></div>}
             <div className="panel"><h2>Important project guidelines</h2><Bullets items={c.guidelines} /></div>
             <div className="panel">
               <label className="check"><input type="checkbox" checked={read} onChange={(e) => setRead(e.target.checked)} /><span>I have read and understood the project overview, objectives, instructions and expected deliverables.</span></label>

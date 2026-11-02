@@ -66,3 +66,11 @@ Database triggers queue every event email (welcome, approvals, assignments, subm
 2. **The schedule**: `supabase/schedule.sql` (pg_cron + pg_net) runs it every minute and also queues reminders and statements. Without it, reminders and the Monday/1st statements never fire and a stuck queue is only flushed when someone uses the app.
 
 Check anytime in Admin > Settings: the *Email delivery log* shows queued/sent/failed rows, *Notification errors* shows events that could not queue an email.
+
+## Continuous project pool and reference links (008)
+
+Run `supabase/008_task_pool.sql` in the SQL editor **before** deploying the app version that reads `reference_links`.
+It adds per-project reference links (with category defaults) and `refresh_task_pool()`, which the existing `outlier-jobs` cron
+(`run_scheduled_jobs`, every 15 minutes) calls: expired published projects are re-opened with a new deadline, and up to
+`task_drip_per_day` (default 5) draft projects are published each day. Tune with the `task_refresh_days` and `task_drip_per_day` settings.
+Check it with `select public.refresh_task_pool();` and `select * from cron.job_run_details order by start_time desc limit 5;`.

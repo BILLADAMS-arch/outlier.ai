@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import RefLinks from '../components/RefLinks'
 import { Link, useParams } from 'react-router-dom'
 import { useAsync } from '../hooks/useAsync'
 import * as tasksApi from '../services/tasks'
@@ -47,6 +48,7 @@ export default function TaskDetails() {
                 <h2>Required qualifications</h2><List items={t.qualifications} />
                 <h2>Required skills</h2><div className="chips">{t.skills.map((s) => <span className="chip" key={s}>{s}</span>)}</div>
                 <h2>How to apply</h2><p>{t.applyInstructions}</p>
+                {t.referenceLinks?.length > 0 && <><h2>References and tools</h2><p className="muted">Read up here before you start, and use these tools alongside the Outlier workspace.</p><RefLinks links={t.referenceLinks} /></>}
               </div>
               <aside className="detail-side">
                 <PayBox task={t} />

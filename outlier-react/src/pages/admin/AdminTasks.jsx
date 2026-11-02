@@ -9,6 +9,7 @@ import { configToForm, formToConfig } from '../../utils/workspaceConfig'
 import { CATEGORY_TYPE, WORKSPACE_TYPES, configFor } from '../../utils/workspaceTypes'
 import ResourcesDialog from './ResourcesDialog'
 import { money } from '../../utils/format'
+import { formatRefLinks, parseRefLinks } from '../../utils/refLinks'
 import { DifficultyBadge, EmptyState, Icon, Loaded } from '../../components/ui'
 import FormDialog from '../../components/FormDialog'
 
@@ -85,8 +86,8 @@ function TaskForm({ task: t, categories, onClose, onSaved }) {
   const imgOptions = [...(isNew ? [] : [{ value: 'keep', label: 'Keep current image' }]), ...[1, 2, 3].map((n) => ({ value: String(n), label: `Category photo ${n}` }))]
   return (
     <FormDialog wide title={isNew ? 'New project' : 'Edit project'} confirmLabel={isNew ? 'Create project' : 'Save changes'} onClose={onClose}
-      initial={t ? { ...t, category: t.categoryId, rate: t.hourlyRate, hours: t.estimatedHours, skills: t.skills.join(', '), responsibilities: lines(t.responsibilities), deliverables: lines(t.deliverables), qualifications: lines(t.qualifications), objectives: lines(t.objectives), guidelines: lines(t.guidelines), apply: t.applyInstructions, instructions: t.instructions || '', deadline: t.deadline || '', imagePick: 'keep', ...configToForm(t) }
-        : { category: categories[0]?.id, difficulty: 'Easy', rateType: 'fixed', status: 'draft', workspaceType: '', tools: '', subtasks: '', deliverables: '', columns: '', targetRows: '', minWords: '', allowAudio: false, requirements: '', experience: '1–2 years of practical experience', apply: 'Submit a short note describing relevant experience and your availability.', imagePick: '1' }}
+      initial={t ? { ...t, category: t.categoryId, rate: t.hourlyRate, hours: t.estimatedHours, skills: t.skills.join(', '), responsibilities: lines(t.responsibilities), deliverables: lines(t.deliverables), qualifications: lines(t.qualifications), objectives: lines(t.objectives), guidelines: lines(t.guidelines), apply: t.applyInstructions, instructions: t.instructions || '', deadline: t.deadline || '', refLinks: formatRefLinks(t.referenceLinks), imagePick: 'keep', ...configToForm(t) }
+        : { category: categories[0]?.id, difficulty: 'Easy', rateType: 'fixed', status: 'draft', workspaceType: '', tools: '', subtasks: '', deliverables: '', columns: '', targetRows: '', minWords: '', allowAudio: false, requirements: '', experience: '1–2 years of practical experience', refLinks: '', apply: 'Submit a short note describing relevant experience and your availability.', imagePick: '1' }}
       fields={[
         { name: 'title', label: 'Title', required: true, maxLength: 120 },
         { name: 'category', label: 'Category', type: 'select', options: categories.map((c) => ({ value: c.id, label: c.name })) },
@@ -105,7 +106,8 @@ function TaskForm({ task: t, categories, onClose, onSaved }) {
         { name: 'deliverables', label: 'Deliverables (one per line)', type: 'textarea', required: true, maxLength: 1000 },
         { name: 'qualifications', label: 'Qualifications (one per line)', type: 'textarea', required: true, maxLength: 1000 },
         { name: 'apply', label: 'Application instructions', type: 'textarea', required: true, maxLength: 500 },
-        { name: 'deadline', label: 'Deadline (leave empty for ongoing)', type: 'date' },
+        { name: 'deadline', label: 'Deadline (leave empty for ongoing)', type: 'date', hint: 'Published projects are re-opened automatically with a new deadline when this date arrives.' },
+        { name: 'refLinks', label: 'References and tools (one per line: Title | https://link | reference or tool)', type: 'textarea', maxLength: 2000, hint: 'Leave empty on a new project to use the defaults for its category.' },
         { name: 'status', label: 'Status', type: 'select', options: ['published', 'draft', 'archived'] },
         { name: 'workspaceType', label: 'Working environment', type: 'select', options: [{ value: '', label: '(default for the category)' }, ...Object.entries(WORKSPACE_TYPES).map(([k, v]) => ({ value: k, label: v.label }))], hint: 'Which tools the tasker works with. Writing, data entry, research, transcription, programming, design, analysis or assistance.' },
         { name: 'tools', label: 'Enabled tools (comma separated keys)', hint: 'Keys: writing editor/attachments · data_entry table/csv/attachments · research notes/sources/findings/table/report/attachments · transcription audio/transcript/attachments · code editor/snippets/attachments · design assets/references · analysis upload/table/calc/chart/report · assistant checklist/notes/status/documents' },
@@ -128,6 +130,7 @@ function TaskForm({ task: t, categories, onClose, onSaved }) {
         if (d.title.length < 5) e.title = 'Title needs at least 5 characters.'
         if (!d.skills.split(',').some((s) => s.trim())) e.skills = 'Add at least one skill.'
         if (d.imageUrl && !unsplashId(d.imageUrl)) e.imageUrl = 'Use an https://images.unsplash.com/photo-… URL.'
+        try { parseRefLinks(d.refLinks) } catch (x) { e.refLinks = x.message }
         try { formToConfig(d.workspaceType || CATEGORY_TYPE[d.category] || 'assistant', d) } catch (x) { e.tools = x.message }
         return e
       }}
@@ -147,7 +150,7 @@ function TaskForm({ task: t, categories, onClose, onSaved }) {
           summary: d.summary, description: d.description, objectives: toList(d.objectives), instructions: d.instructions, guidelines: toList(d.guidelines),
           skills: d.skills.split(',').map((s) => s.trim()).filter((s, i, a) => s && a.findIndex((x) => x.toLowerCase() === s.toLowerCase()) === i),
           experience: d.experience, responsibilities: toList(d.responsibilities), deliverables: toList(d.deliverables), qualifications: toList(d.qualifications),
-          applyInstructions: d.apply, deadline: d.deadline || null, status: d.status, image,
+          applyInstructions: d.apply, referenceLinks: parseRefLinks(d.refLinks), deadline: d.deadline || null, status: d.status, image,
           workspaceType: d.workspaceType || null, workspaceConfig: formToConfig(d.workspaceType || CATEGORY_TYPE[d.category] || 'assistant', d),
         })
         onSaved()

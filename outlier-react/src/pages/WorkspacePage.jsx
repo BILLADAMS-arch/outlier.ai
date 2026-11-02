@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import RefLinks from '../components/RefLinks'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -130,6 +131,7 @@ function WorkspaceView({ a, task, category, initialWs, initialFiles, resources, 
           <Section title="Supporting documents" icon="fa-folder-open" defaultOpen={docResources.length > 0}>
             {docResources.length ? <ul className="mini-list">{docResources.map((r) => <li key={r.id}><span>{r.label}</span><button className="link-btn" onClick={() => openResource(r)}>Open</button></li>)}</ul> : <p className="muted small">No supporting documents.</p>}
           </Section>
+          {task.referenceLinks?.length > 0 && <Section title="References and tools" icon="fa-link" defaultOpen={false}><RefLinks links={task.referenceLinks} compact /></Section>}
           <Section title="Guidelines" icon="fa-shield-halved" defaultOpen={false}><ul className="bullets">{guide.guidelines.map((i) => <li key={i}>{i}</li>)}</ul></Section>
         </aside>
 

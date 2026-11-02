@@ -26,3 +26,11 @@
 .lr-faq details { background: #fff; border: 1px solid #e6eaf2; border-radius: 14px; padding: 0 18px; } .lr-faq summary { cursor: pointer; font-weight: 600; padding: 16px 0; list-style-position: outside; } .lr-faq p { color: #475569; padding: 0 0 16px; line-height: 1.6; }
 .lr-credit { color: #64748b; font-size: .82rem; text-align: center; }
 @media (max-width: 800px) { .lr-hero { grid-template-columns: 1fr; padding: 20px; } .lr-hero-photo { order: -1; } .lr-videos { grid-template-columns: 1fr; } }
+
+/* Reference links on project pages */
+.ref-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 8px 0 16px; }
+.ref-group { background: #f8faff; border: 1px solid #e6eaf2; border-radius: 12px; padding: 14px; }
+.ref-group h3 { font-size: .9rem; display: flex; align-items: center; gap: 7px; margin-bottom: 8px; color: #0f172a; }
+.ref-group ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.ref-group a { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; font-weight: 600; text-decoration: none; color: #2563eb; } .ref-group a:hover { text-decoration: underline; }
+.ref-links.compact { grid-template-columns: 1fr; margin: 0; } .ref-links.compact .ref-group { padding: 10px; }
