@@ -10,6 +10,7 @@ import './styles/motion.css'
 import './styles/auth.css'
 import './styles/shell.css'
 import './styles/dashboard.css'
+import './styles/learn.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
