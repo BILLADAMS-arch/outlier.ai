@@ -147,3 +147,20 @@ describe('one-time codes', () => {
     for (const bad of ['12345', '1234567', '12345678', 'abcdef', '12 456', '', null]) expect(otpOk(bad)).toBe(false)
   })
 })
+
+import { passwordChecks, passwordStrength } from '../utils/password'
+describe('password strength indicator', () => {
+  it('reports the two requirements', () => {
+    expect(passwordChecks('abc12345')).toEqual({ length: true, number: true })
+    expect(passwordChecks('abcdefgh')).toEqual({ length: true, number: false })
+    expect(passwordChecks('a1')).toEqual({ length: false, number: true })
+  })
+  it('scores weak to strong', () => {
+    expect(passwordStrength('').score).toBe(0)
+    expect(passwordStrength('abc').score).toBe(1)
+    expect(passwordStrength('abcdefg1').score).toBeGreaterThanOrEqual(1)
+    expect(passwordStrength('Abcdefg1').score).toBeGreaterThan(passwordStrength('abcdefgh').score)
+    expect(passwordStrength('Correct-Horse-Battery9').score).toBe(4)
+    expect(passwordStrength('Correct-Horse-Battery9').label).toBe('Strong')
+  })
+})

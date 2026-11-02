@@ -7,6 +7,7 @@ import { ToastProvider } from './context/ToastContext'
 import './styles/app.css'
 import './styles/landing.css'
 import './styles/motion.css'
+import './styles/auth.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

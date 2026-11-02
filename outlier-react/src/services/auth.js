@@ -6,9 +6,19 @@ export async function signUp({ fullName, email, password }) {
   return { needsConfirmation: !data.session }
 }
 
-export async function signIn({ email, password }) {
+// "Remember me": when unticked, the session ends when the browser is closed (see AuthContext). The session itself is still
+// issued, stored and refreshed by Supabase exactly as before.
+export function markSession(remember = true) {
+  try { localStorage.setItem('outlier.remember', remember ? '1' : '0'); sessionStorage.setItem('outlier.session', '1') } catch { /* storage unavailable: behave as remembered */ }
+}
+export const shouldEndSession = () => {
+  try { return localStorage.getItem('outlier.remember') === '0' && !sessionStorage.getItem('outlier.session') } catch { return false }
+}
+
+export async function signIn({ email, password, remember = true }) {
   const { error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) throw new Error(error.message === 'Invalid login credentials' ? 'Incorrect email or password.' : error.message)
+  markSession(remember)
 }
 
 export const signOut = () => supabase.auth.signOut()
@@ -23,6 +33,7 @@ export async function getProfile(userId) {
 export async function verifySignupCode({ email, code }) {
   const { error } = await supabase.auth.verifyOtp({ email, token: code.trim(), type: 'signup' })
   if (error) throw new Error(/expired|invalid/i.test(error.message) ? 'That code is invalid or has expired. Request a new one.' : error.message)
+  markSession(true)
 }
 export async function resendSignupCode(email) {
   const { error } = await supabase.auth.resend({ type: 'signup', email })
@@ -37,4 +48,5 @@ export async function resetPasswordWithCode({ email, code, password }) {
   if (error) throw new Error(/expired|invalid/i.test(error.message) ? 'That code is invalid or has expired. Request a new one.' : error.message)
   const { error: e2 } = await supabase.auth.updateUser({ password })
   if (e2) throw new Error(e2.message)
+  markSession(true)
 }

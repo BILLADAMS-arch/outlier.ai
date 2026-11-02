@@ -11,7 +11,11 @@ export function AuthProvider({ children }) {
   const [loaded, setLoaded] = useState({ userId: null, profile: null, error: null })
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+    supabase.auth.getSession().then(async ({ data }) => {
+      // Signed in without "Remember me" and the browser was closed since: end that session.
+      if (data.session && authService.shouldEndSession()) { await authService.signOut(); setSession(null); return }
+      setSession(data.session)
+    })
     const { data } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
     return () => data.subscription.unsubscribe()
   }, [])
