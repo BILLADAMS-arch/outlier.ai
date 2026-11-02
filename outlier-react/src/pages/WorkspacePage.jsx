@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import RefLinks from '../components/RefLinks'
+import BriefView from '../components/brief/BriefView'
+import BriefDialog from '../components/brief/BriefDialog'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -12,7 +13,6 @@ import * as tasksApi from '../services/tasks'
 import * as workspaceApi from '../services/workspace'
 import * as earningsApi from '../services/earnings'
 import { configFor, missingItems, progressPercent, WORKSPACE_TYPES } from '../utils/workspaceTypes'
-import { onboardingContent } from '../utils/onboarding'
 import { earningsFor, fmtDateTime, hms, hoursLabel, money } from '../utils/format'
 import { EmptyState, Icon, Spinner, StatusPill } from '../components/ui'
 import ToolRenderer from '../components/workspace/tools'
@@ -68,7 +68,8 @@ function WorkspaceView({ a, task, category, initialWs, initialFiles, resources, 
   const missing = useMemo(() => missingItems(cfg, ws.data, ws.progress, fileList), [cfg, ws.data, ws.progress, fileList])
   const pct = progressPercent(cfg, ws.progress)
   const rate = Number(a.agreedRate)
-  const guide = onboardingContent(task)
+  const [briefOpen, setBriefOpen] = useState(false)
+  const needsAck = mine && editable && !a.briefAckAt
   const status = timer.status || a.status
   const T = WORKSPACE_TYPES[cfg.type]
   const docResources = resources.filter((r) => r.kind !== 'audio')
@@ -114,12 +115,14 @@ function WorkspaceView({ a, task, category, initialWs, initialFiles, resources, 
       {mine && !editable && <div className="callout info ws-banner">This work is <b>{status}</b> and is locked. {status === 'submitted' ? 'It can be edited again only if an administrator requests revisions.' : ''}</div>}
       {a.reviewerNote && a.status === 'in_progress' && <div className="callout ws-banner"><b>Revision requested:</b> {a.reviewerNote}</div>}
 
+      {needsAck && <BriefDialog task={task} onAcknowledge={async () => { try { await assignmentsApi.ackBriefing(a.id); toast.success('Briefing acknowledged.'); reloadAll() } catch (e) { toast.error(e.message); throw e } }} />}
+      {briefOpen && <BriefDialog task={task} onClose={() => setBriefOpen(false)} />}
+
       <div className={`ws-body${left ? '' : ' no-left'}${right ? '' : ' no-right'}`}>
         <aside className="ws-left" aria-label="Project information">
           <button className="ws-collapse" onClick={() => setLeft(false)} aria-label="Collapse project information"><Icon name="fa-angles-left" /></button>
-          <Section title="Instructions" icon="fa-book"><ol className="step-list">{guide.instructions.map((i) => <li key={i}>{i}</li>)}</ol></Section>
-          <Section title="Objectives" icon="fa-bullseye"><ul className="bullets">{guide.objectives.map((i) => <li key={i}>{i}</li>)}</ul></Section>
-          <Section title="Requirements" icon="fa-clipboard-check"><ul className="bullets">{[...task.qualifications, ...cfg.submissionRequirements].map((i) => <li key={i}>{i}</li>)}</ul></Section>
+          <button type="button" className="btn secondary ws-brief-btn" onClick={() => setBriefOpen(true)}><Icon name="fa-expand" /> Open the full project brief</button>
+          <BriefView task={task} variant="side" openIds={['overview', 'steps']} />
           <Section title="Deliverables checklist" icon="fa-list-check">
             <ul className="checklist ro">
               {(cfg.requiredDeliverables.length ? cfg.requiredDeliverables : task.deliverables.map((d) => ({ id: d, label: d, none: true }))).map((d) => {
@@ -131,8 +134,6 @@ function WorkspaceView({ a, task, category, initialWs, initialFiles, resources, 
           <Section title="Supporting documents" icon="fa-folder-open" defaultOpen={docResources.length > 0}>
             {docResources.length ? <ul className="mini-list">{docResources.map((r) => <li key={r.id}><span>{r.label}</span><button className="link-btn" onClick={() => openResource(r)}>Open</button></li>)}</ul> : <p className="muted small">No supporting documents.</p>}
           </Section>
-          {task.referenceLinks?.length > 0 && <Section title="References and tools" icon="fa-link" defaultOpen={false}><RefLinks links={task.referenceLinks} compact /></Section>}
-          <Section title="Guidelines" icon="fa-shield-halved" defaultOpen={false}><ul className="bullets">{guide.guidelines.map((i) => <li key={i}>{i}</li>)}</ul></Section>
         </aside>
 
         <main className="ws-center" id="ws-main">

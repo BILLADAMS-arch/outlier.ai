@@ -1,0 +1,122 @@
+B = {}
+
+B['t064'] = dict(
+ d="Colour-correct, crop and cut out 150 product photographs onto a clean white background for web and print, using real product photos from the Open Food Facts project (crowd-sourced packaging photos under CC BY-SA). You deliver consistent web-ready and print-ready sets.",
+ bg="Online shops need consistent images: same crop, same white, same shadow style. Photos from different phones vary widely in colour and exposure, so batch editing with a repeatable recipe is the core skill.",
+ pr="Produce 150 images at 2000x2000 px (print) and 800x800 px (web) with a pure white (255,255,255) background, accurate colour and consistent product size within the frame.",
+ si=["150 photos selected from Open Food Facts", "White balance, exposure and background clean-up", "Consistent crop, margins and soft shadow", "Two export sizes and a quality log"],
+ so=["Shooting new photography", "Retouching people"],
+ st=["Download 150 product images from Open Food Facts (via its image data or product pages), choosing items with clear single-product photos, and record each product code and licence (CC BY-SA, credit required).", "Set up Lightroom or free alternatives (darktable, GIMP) with a working colour space of sRGB and make a style sheet of the final specs.", "Build a base preset: auto white balance using the packaging's white or grey area, then exposure and contrast adjustments.", "Remove the background with a selection and a layer mask (or an automated cut-out tool you then refine), clean edges and check at 200 percent for halos.", "Place the product on a 2000x2000 canvas with the product filling 80 to 85 percent of the longest side and add a soft contact shadow that is the same in every image.", "Check that the background is 255,255,255 with the eyedropper in four corners and fix any that fail.", "Export the 2000x2000 JPEG (quality 90) and an 800x800 version under 150 KB for the web.", "Complete the quality log (checked: white point, edges, size, shadow, colour) and list the credits."],
+ ob=["Make a consistent catalogue image set", "Keep colours accurate", "Deliver web and print versions"],
+ ip=[("Open Food Facts data and images", "public", "https://world.openfoodfacts.org/data", "Open database with product photos (CC BY-SA)."), ("darktable", "public", "https://www.darktable.org", "Free raw editor."), ("GIMP", "public", "https://www.gimp.org", "Free image editor.")],
+ dl=["150 print images (JPEG, zip)", "150 web images (JPEG, zip)", "Quality log and credits (XLSX)"],
+ ac=["Background is pure white in all images (sampled at four corners)", "Product fills 80 to 85 percent of the longest side", "No halos or jagged edges at 200 percent", "Web images are 800x800 and under 150 KB", "Credits for every source image are listed"],
+ ms=["After about 1.5 hours: images selected and preset made", "After about 4 hours: all edited", "After about 5 hours: exports and log submitted"],
+ sb=["Upload two zips and the log", "Name files with the product code", "Include before and after samples of five images"],
+ sk=["Select and prepare", "Edit and cut out", "Standardise size and shadow", "Export and log"],
+ wd=[("Edited image sets (zip)", "file"), ("Quality log and credits (XLSX)", "file")],
+)
+
+B['t065'] = dict(
+ d="Cut a one-hour public webinar into twelve vertical clips with captions. You use a CC BY-licensed recording (for example a conference talk or university lecture on the Internet Archive or YouTube with a Creative Commons licence), select the twelve best moments and edit them for 9:16 social platforms.",
+ bg="Repurposing long content for short video extends its reach, but clips that start slowly or have unreadable captions get skipped. Good clips begin with the point, are 20 to 60 seconds and are understandable with the sound off.",
+ pr="Deliver twelve captioned 1080x1920 clips of 20 to 60 seconds, each with a hook in the first three seconds, and a content log explaining the selection.",
+ si=["Selection of twelve moments from one hour", "Reframing to 9:16", "Burned-in captions and titles", "A log with timecodes, hooks and licences"],
+ so=["Posting to social platforms", "Writing new voiceover"],
+ st=["Choose a one-hour CC BY recording, confirm the licence on its page and plan to credit the creator in each clip.", "Watch it at 1.5x and mark 20 candidate moments with timecode and the one-sentence point of each.", "Pick the best twelve for variety and self-contained meaning, and write a hook line for each.", "Cut each in Premiere Pro, DaVinci Resolve or CapCut, starting on the key sentence and ending on a completed thought.", "Reframe to 9:16 with the speaker kept in the safe area, and add motion tracking or a slide crop when slides are on screen.", "Generate captions with the tool's speech-to-text, correct every error and style them (two lines at most, large, high contrast, avoiding the bottom 15 percent of the frame).", "Normalise audio to -14 LUFS and add a short credit line at the end of each clip.", "Export to H.264 1080x1920 at 30 fps and fill in the content log."],
+ ob=["Pick the strongest moments", "Make clips work without sound", "Credit the source properly"],
+ ip=[("A CC BY one-hour video", "tasker", "", "Find one at https://archive.org or on YouTube with the Creative Commons filter, and record the licence."), ("DaVinci Resolve (free)", "public", "https://www.blackmagicdesign.com/products/davinciresolve", "Editor with captions."), ("Subtitle and caption design guidance (BBC)", "public", "https://www.w3.org/WAI/media/av/captions/", "Readable caption rules.")],
+ dl=["Twelve MP4 clips (zip)", "Content log with timecodes and hooks (XLSX)", "Project file (zip)"],
+ ac=["Twelve clips of 20 to 60 seconds at 1080x1920", "Each starts with the point within three seconds", "Captions are accurate and readable on a phone", "Loudness is about -14 LUFS", "The source and licence are credited in the log and in the clips"],
+ ms=["After about 1.5 hours: moments selected", "After about 4.5 hours: clips cut and reframed", "After about 6 hours: captions, export and log submitted"],
+ sb=["Upload the clips, log and project", "State the source URL", "Name clips clip01 to clip12"],
+ sk=["Select moments", "Cut and reframe", "Captions and audio", "Export and log"],
+ wd=[("Clips (zip)", "file"), ("Content log (XLSX)", "file")],
+)
+
+B['t066'] = dict(
+ d="Edit a 3-minute explainer video from open-licence material: a script you write about how a simple technology works, voiceover you record, stock footage from Pexels or Pixabay, free music, and motion-graphics titles. The result is a finished video with the project file.",
+ bg="An explainer must convey one idea in three minutes. Editors work from a script and a rough cut, then add pacing, sound and graphics, because audio quality matters more to viewers than picture quality.",
+ pr="Produce a polished 3-minute 1080p explainer on 'How a heat pump works' with voiceover, matching visuals, titles, captions and mixed audio.",
+ si=["A 400-word script, voiceover recording", "Footage and music from free libraries", "Editing, titles and simple animations", "Captions and an export"],
+ so=["Original filming", "Paid stock licences"],
+ st=["Write a 400-word script with a clear structure (hook, problem, how it works in three steps, benefit, call to action) and check facts against the US Department of Energy's heat-pump page.", "Record the voiceover with a decent microphone or phone in a quiet room, remove noise and level it.", "Collect footage and images from Pexels or Pixabay for each script line, noting the licence and credit; create two simple animated diagrams of your own (refrigerant cycle) in DaVinci Resolve Fusion or Canva.", "Assemble a rough cut by voiceover timing, then tighten to 3 minutes with cuts every 3 to 6 seconds.", "Add lower thirds, key term labels and a title card, using one font and the same colours throughout.", "Choose royalty-free music (YouTube Audio Library or Free Music Archive), duck it under the voice by 18 to 20 dB and mix to -16 LUFS.", "Add captions with a corrected transcript, review the video on a phone and a laptop, and fix mistakes.", "Export H.264 1080p and the archive project with media list and credits."],
+ ob=["Explain one idea clearly", "Edit with pace and clean sound", "Use only properly licensed media"],
+ ip=[("US Department of Energy: heat pumps", "public", "https://www.energy.gov/energysaver", "Fact-checking source."), ("Pexels videos", "public", "https://www.pexels.com/videos/", "Free footage."), ("YouTube Audio Library", "public", "https://studio.youtube.com", "Free music."), ("Free Music Archive", "public", "https://freemusicarchive.org", "Music with licences.")],
+ dl=["Final video (MP4, 1080p, 3 minutes)", "Script and credits (DOCX)", "Project file with media list (zip)"],
+ ac=["Duration is 2:45 to 3:15", "Voiceover is clean and the mix is around -16 LUFS", "Visuals match each part of the script", "Captions are accurate", "Credits list the licence of every asset"],
+ ms=["After about 3 hours: script and voiceover", "After about 7 hours: rough cut", "After about 12 hours: final edit submitted"],
+ sb=["Upload the video, script and project", "List all assets with licences", "State the software used"],
+ sk=["Script and voiceover", "Gather assets and rough cut", "Titles and graphics", "Mix, captions and export"],
+ wd=[("Final video", "file"), ("Script, credits and project (zip)", "file")],
+)
+
+B['t067'] = dict(
+ d="Blend bracketed exposures and correct perspective on 80 interior and exterior property photos, using public bracketed sets that are openly licensed. You deliver natural-looking images with straight verticals and balanced window light.",
+ bg="Real-estate photos need to be bright and true to the space. HDR blending recovers window views and shadows, but over-processing creates halos and false colours that buyers notice. Converging verticals make rooms look distorted.",
+ pr="Process 80 images from 27 bracketed sets (three exposures each) into final JPEGs with corrected perspective, neutral colour and no visible HDR artefacts.",
+ si=["HDR blending or exposure fusion", "Perspective and lens correction", "Colour balance and window pull", "A quality checklist per image"],
+ so=["Virtual staging", "Removing objects from images (other than dust spots)"],
+ st=["Source bracketed interior and exterior image sets from freely licensed collections (for example Wikimedia Commons categories on exposure bracketing, or sample sets from HDR tools) totalling 80 final images, noting licences.", "Import into Lightroom or a free alternative and align the brackets, enabling ghost removal for moving objects.", "Blend using exposure fusion or HDR merge with a natural setting; aim for visible window views without grey, flat interiors.", "Correct lens distortion and use perspective correction so that vertical lines are vertical and horizontals level; crop to 3:2.", "Neutralise colour casts from mixed lighting by setting white balance on a known neutral and reducing orange tungsten spill.", "Remove dust spots and small distractions, and keep an unedited reference to avoid altering the property.", "Check each image at 100 percent for halos, noise and banding, then fill in the checklist.", "Export JPEG sRGB at 3000 px on the long edge and a web size of 1600 px."],
+ ob=["Create natural-looking HDR blends", "Straighten perspective", "Standardise colour"],
+ ip=[("Bracketed photo sets", "tasker", "", "Find openly licensed bracketed sets (for example on Wikimedia Commons or the sample sets published by HDR software makers) and record each licence."), ("Wikimedia Commons: HDR images", "public", "https://commons.wikimedia.org/", "A starting point for licensed images."), ("Lightroom Classic help: merge to HDR", "public", "https://helpx.adobe.com/lightroom-classic/help/hdr-photo-merge.html", "Workflow guidance.")],
+ dl=["80 final images (JPEG, zip)", "Quality checklist (XLSX)", "Before and after comparison for ten images (PDF)"],
+ ac=["Vertical lines are within 1 degree in all images", "No visible halos at 100 percent in the check sample", "Window views are visible and colour is neutral", "Both export sizes are provided", "All sources and licences are recorded"],
+ ms=["After about 1.5 hours: sets sourced", "After about 5.5 hours: blends and corrections", "After about 8 hours: checks and submission"],
+ sb=["Upload the images, checklist and comparison", "Keep the source file names in the checklist", "List licences"],
+ sk=["Source sets", "Blend and align", "Perspective and colour", "Quality check and export"],
+ wd=[("Final images (zip)", "file"), ("Checklist and comparison (zip)", "file")],
+)
+
+B['t068'] = dict(
+ d="Colour grade 25 minutes of mixed-camera footage for a short documentary to a consistent look. You assemble footage from public-domain archive films (the Prelinger Archives on the Internet Archive) and recent Pexels clips shot on different cameras, then match and grade them under a colour-managed workflow in DaVinci Resolve.",
+ bg="Documentaries combine footage from different cameras and eras, so scenes look inconsistent until the colourist matches exposure and white balance first and only then applies a look. Colour management and scopes make the work objective.",
+ pr="Deliver a graded 25-minute master with consistent exposure, skin tones and look, plus the LUTs and a grading report.",
+ si=["Assembly of 25 minutes of footage from at least six sources", "Primary correction, shot matching and a creative look", "Skin tone and highlight checks on scopes", "Exports: ProRes master and H.264 review file, LUT"],
+ so=["Editing the story", "Sound design"],
+ st=["Assemble 25 minutes of varied footage from Prelinger Archives films (public domain) and CC0 Pexels clips in a Resolve timeline, noting each clip's source and camera or format.", "Set up colour management (DaVinci YRGB Colour Managed) with the correct input colour space for each clip and Rec.709 output.", "Do primary corrections on each shot using the scopes: set black and white points, exposure, and neutral balance with the waveform and parade.", "Match shots in each scene using split-screen against a hero shot and the vectorscope skin-tone line, and group shots to apply scene adjustments.", "Design the look (for example slightly lifted blacks, restrained saturation, warm highlights and cool shadows) and apply it to the whole timeline with a node, tuning per scene.", "Check legal levels (0 to 100 IRE), protect highlights and examine skin tone consistency across the cuts.", "Export a graded ProRes 422 master, an H.264 review file and a LUT of the look.", "Write a grading report describing the colour pipeline, the look decisions and any shots that could not be matched and why."],
+ ob=["Match footage from many cameras", "Create a coherent look", "Use scopes and colour management"],
+ ip=[("Prelinger Archives (public domain films)", "public", "https://archive.org/details/prelinger", "Public-domain archive films."), ("Pexels videos (CC0 licence)", "public", "https://www.pexels.com/videos/", "Modern clips."), ("DaVinci Resolve (free)", "public", "https://www.blackmagicdesign.com/products/davinciresolve", "Grading software.")],
+ dl=["Graded master (ProRes 422, or the largest feasible quality)", "Review file (H.264 MP4)", "LUT file (.cube)", "Grading report (PDF)"],
+ ac=["All footage is within legal levels", "Shots within each scene match visually on a side-by-side check", "Skin tones follow the vectorscope line", "The look is consistent across the whole timeline", "The report lists every source and unresolved shot"],
+ ms=["After about 3 hours: assembly and colour management", "After about 9 hours: primary correction and matching", "After about 14 hours: look and checks", "After about 16 hours: exports and report submitted"],
+ sb=["Upload the files (provide a download link for very large masters)", "State the Resolve version", "List all sources"],
+ sk=["Assemble and set up colour management", "Primary correction and matching", "Create the look", "Export and report"],
+ wd=[("Graded masters and LUT (zip)", "file"), ("Grading report (PDF)", "file")],
+)
+
+B['t069'] = dict(
+ d="Design a 45-second animated launch film with branded lower-thirds for a fictional smart bottle, 'Brook' (invented product and brand), using Adobe After Effects or the free Blender and DaVinci Resolve Fusion. You storyboard, animate, add sound design and deliver the final animation and project.",
+ bg="Product launch animations rely on rhythm: scenes timed to music, simple easing and a clear final call to action. Sound is half of the impact, and brand consistency in type and colour keeps the film credible.",
+ pr="Produce a 45-second 1080p animation with a storyboard, five scenes, branded graphics, sound design and an end card.",
+ si=["Storyboard and animatic", "Five animated scenes with branded lower-thirds", "Sound effects and music edit", "Final render and project files"],
+ so=["Filming real products", "3D modelling beyond simple shapes"],
+ st=["Read the brand brief below and write a storyboard of five scenes with a sentence each, duration and the sound planned.", "Create a simple animatic with stills and a music track to confirm the timing before animating.", "Build the brand assets: logo (text-based), colour palette, a lower-third template with a font from Google Fonts.", "Animate each scene using easing curves and a hierarchy of motion (hero element first), at 30 fps, keeping each action readable for at least 12 frames.", "Add the lower-thirds with the product claims given in the brief, animating in and out consistently.", "Source music and effects from Free Music Archive or Freesound (CC0 or CC BY) and cut them to the visuals, sync hits to key moments and mix to -14 LUFS.", "Check text safety margins and legibility at 720p, fix any animation glitches frame by frame.", "Render to H.264 1080p and an alpha ProRes of the lower-thirds, and package the project with a credits list."],
+ ob=["Tell the launch story in 45 seconds", "Keep the brand consistent", "Sync sound and motion"],
+ ip=[("Brook brand and claims", "illustrative", "", "Fictional product supplied below."), ("Freesound", "public", "https://freesound.org", "Sound effects with licences."), ("Free Music Archive", "public", "https://freemusicarchive.org", "Music with licences."), ("Blender", "public", "https://www.blender.org", "Free animation software.")],
+ cd="""Product (fictional): Brook, a smart water bottle that reminds you to drink. Palette: deep blue #0B3D91, aqua #2EC4B6, white. Tagline: 'Drink up on time.' Claims for lower-thirds (illustrative): 'Tracks every sip', '30-day battery', 'Syncs with your phone'.
+Scenes: 1 thirsty desk worker (hook), 2 bottle reveal, 3 sip tracking visual, 4 battery and sync, 5 end card with tagline and website placeholder.""",
+ dl=["Final animation (MP4, 1080p, 45 seconds)", "Storyboard (PDF)", "Project files and credits (zip)", "Lower-thirds with alpha (MOV or PNG sequence)"],
+ ac=["Duration is 43 to 47 seconds at 1080p and 30 fps", "Sound is synced and the mix is near -14 LUFS", "Brand colours and fonts are used consistently", "Text is legible at 720p and inside safe margins", "All assets are properly licensed and credited"],
+ ms=["After about 4 hours: storyboard and animatic", "After about 13 hours: animation", "After about 17 hours: sound and render", "After about 20 hours: package submitted"],
+ sb=["Upload the four deliverables", "State the software and version", "List the licence of each sound and font"],
+ sk=["Storyboard and animatic", "Brand assets", "Animate scenes", "Sound design", "Render and package"],
+ wd=[("Final animation and lower-thirds (zip)", "file"), ("Project and storyboard (zip)", "file")],
+)
+
+B['t070'] = dict(
+ d="Direct and edit a four-part mini-documentary series about a local small business or craftsperson of your choice who agrees in writing to take part. You plan the series, run two interviews, shoot b-roll, edit four episodes of 3 to 5 minutes, and deliver masters with a release form and a production log.",
+ bg="A brand documentary needs a clear story arc, trust with the interviewee and careful logistics. Most problems arise from poor audio and missing permissions, so release forms and sound checks are as important as creativity.",
+ pr="Deliver four finished episodes of 3 to 5 minutes with a series outline, signed releases, shot log and delivery masters in two formats.",
+ si=["Series treatment and episode outline", "Interviews, b-roll and sound recording", "Edit, colour and mix of four episodes", "Delivery masters, captions and a production log"],
+ so=["Paid distribution", "Commercial rights negotiation"],
+ st=["Find a willing subject (small shop, workshop or studio), explain the project and obtain a signed release using a standard template from a legal resource such as Creative Commons or a film school sample.", "Research the subject and write a one-page treatment with four episode themes and a list of 20 interview questions.", "Plan the shoots: location recce, shot list, equipment and audio plan (lavalier microphone, quiet room), and risk assessment.", "Record two interviews of 30 to 40 minutes and at least 90 minutes of b-roll, checking audio on headphones and keeping a shot log.", "Transcribe the interviews, build selects for each episode and write a paper edit.", "Edit each episode with a hook, a clear arc, b-roll cutaways, music from free libraries and a title and credit sequence, then grade for consistency.", "Mix the audio with dialogue at -16 LUFS, add captions and review each episode with a viewer, then revise.", "Export masters (ProRes or high-bitrate H.264) and web versions, and complete the production log with a credits list and licences."],
+ ob=["Tell a coherent story across four episodes", "Capture good sound and picture", "Handle permissions properly"],
+ ip=[("A subject you arrange yourself", "tasker", "", "Needs a signed release; do not film anyone without consent."), ("Creative Commons licences", "public", "https://creativecommons.org/share-your-work/", "Background on licensing."), ("Free Music Archive", "public", "https://freemusicarchive.org", "Music with licences.")],
+ dl=["Four episode masters and web versions (zip or download link)", "Treatment and paper edits (PDF)", "Signed release (PDF) and production log (XLSX)", "Captions (SRT)"],
+ ac=["Four episodes of 3 to 5 minutes with a consistent look and sound", "Dialogue is clear and averages -16 LUFS", "A signed release exists and is stored", "Captions are accurate", "The log lists every asset and licence"],
+ ms=["After about 8 hours: treatment, release and plan", "After about 20 hours: shooting complete", "After about 45 hours: all episodes edited", "After about 60 hours: masters and log submitted"],
+ sb=["Upload documents and provide download links for large masters", "Redact the subject's contact details in the release", "State camera and microphone"],
+ sk=["Treatment, release and plan", "Interviews and b-roll", "Edit four episodes", "Mix, grade and captions", "Masters and log"],
+ wd=[("Episode masters (zip or link)", "file"), ("Treatment, release and log (zip)", "file")],
+)

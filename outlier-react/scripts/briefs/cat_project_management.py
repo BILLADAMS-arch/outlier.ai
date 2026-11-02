@@ -1,0 +1,127 @@
+B = {}
+
+B['t127'] = dict(
+ d="Keep a Jira board current and send weekly status updates for a simulated four-week software project: you build the board from a supplied backlog, update it from the daily activity log provided in this brief, and write four weekly status reports with risks and metrics.",
+ bg="Status reports are read in two minutes by busy stakeholders. The board must be trustworthy for the report to be, so tickets need accurate status, owners and estimates. A good report separates progress, risks and decisions needed.",
+ pr="Maintain a Jira (free tier) board for 30 tickets through four weeks of simulated updates and write four one-page status reports with burn-up data.",
+ si=["Jira project set-up and workflow", "Ticket creation from the backlog", "Updating from four weeks of the log", "Four weekly reports and metrics"],
+ so=["Running the team", "Making estimates for the team"],
+ st=["Create a free Jira Software project (Scrum or Kanban) with a workflow of To do, In progress, In review and Done, and the labels in the case data.", "Create the 30 tickets from the backlog table with type, priority, estimate (story points) and assignee.", "Apply week 1 of the activity log by moving tickets, adding comments and blockers, and capture the board state.", "Write the week 1 report: one-line summary, progress (points done versus planned), milestones, top three risks with owners, decisions needed, and next week's focus.", "Repeat for weeks 2 to 4, updating the burn-up chart and velocity figures each week.", "Handle the scope change in week 3 (two new tickets added, one removed) and show its effect on the forecast.", "Check each report for consistency with the board (every number matches) and highlight trends such as the growing blocked count.", "Export the board and charts and write a short retrospective on the reporting process."],
+ ob=["Keep the board accurate", "Report clearly and briefly", "Show trend and risk"],
+ ip=[("Backlog and activity log", "illustrative", "", "Fictional project supplied below."), ("Atlassian Jira Software free plan", "public", "https://www.atlassian.com/software/jira/free", "Free tool."), ("Atlassian Agile Coach: metrics", "public", "https://www.atlassian.com/agile/project-management/metrics", "Velocity and burn charts.")],
+ cd="""Project (fictional): Orbit mobile app v2.0, 4 weeks, 5 developers. Backlog (30 tickets, sample): OB-1 Login redesign (5 pts), OB-2 Push notification settings (3), OB-3 Offline mode (8), OB-4 Crash on startup bug (2, High), OB-5 Payment screen redesign (5)...
+Week 1 log (sample): OB-4 done; OB-1 in progress; OB-3 blocked waiting on API from backend team.
+Week 3 scope change: add OB-31 and OB-32 (3 pts each), remove OB-2.""",
+ dl=["Board export and burn-up chart (PDF or PNG)", "Four weekly status reports (PDF)", "Retrospective (PDF, half a page)"],
+ ac=["All 30 tickets exist with correct status after each week", "Report numbers match the board", "Each report lists risks with owners and decisions needed", "The scope change is reflected in the forecast", "Each report fits on one page"],
+ ms=["After about 2 hours: set-up and tickets", "After about 5 hours: weeks 1 and 2", "After about 8 hours: weeks 3 and 4 and retrospective submitted"],
+ sb=["Upload the files", "Use the same report template each week", "State the Jira plan used"],
+ sk=["Set up Jira", "Weeks 1 and 2 updates and reports", "Weeks 3 and 4 updates and reports", "Retrospective"],
+ wd=[("Board evidence (zip)", "file"), ("Status reports (PDF)", "file")],
+)
+
+B['t128'] = dict(
+ d="Practise taking meeting minutes and tracking actions using three recorded public meetings (for example public US city council or federal advisory committee meetings, which are public records). You produce minutes, a decision log and an action tracker for each.",
+ bg="Minutes record decisions and responsibilities, not conversation. The value is in the actions: who does what by when. Accurate, neutral minutes protect everybody when memories differ.",
+ pr="Write minutes for three one-hour public meetings in the standard format with decisions, actions with owners and dates, and a consolidated tracker.",
+ si=["Three minutes documents", "Decision log", "Action tracker with follow-up status", "A review checklist"],
+ so=["Facilitating the meetings", "Transcribing verbatim"],
+ st=["Choose three recorded public meetings of about one hour each (for example from a city council's YouTube channel or a federal advisory committee on regulations.gov) and record the sources.", "Read the agenda first and prepare a minutes template with attendees, apologies, agenda items, decisions, actions and next meeting.", "Watch and take notes against the agenda, capturing motions, who moved and seconded, the vote result, and any action with a named person.", "Write the minutes within 24 hours in neutral language: past tense, no opinions, no quotes unless a motion is recorded.", "Extract decisions into a log and actions into the tracker with owner, due date, status and the minute reference.", "Check the minutes against the official minutes or the meeting record where the source publishes them, and note differences.", "Write the follow-up status as at the next meeting if the next meeting is available; otherwise write the reminder messages that you would send.", "Complete the review checklist and a short note on how you handled unclear audio or items."],
+ ob=["Capture decisions and actions accurately", "Write neutral minutes", "Track follow-up"],
+ ip=[("Public meeting recordings", "tasker", "", "Choose recorded public meetings from a city council, school board or federal advisory committee."), ("Regulations.gov", "public", "https://www.regulations.gov", "Public meetings and documents."), ("Robert's Rules of Order: minutes (overview)", "public", "https://robertsrules.com/", "Standard formats.")],
+ dl=["Three sets of minutes (DOCX)", "Decision log and action tracker (XLSX)", "Review checklist and notes (PDF)"],
+ ac=["Minutes include every motion with mover, seconder and result", "Actions have an owner and a due date or are marked 'date not stated'", "Language is neutral", "Differences from official minutes are noted", "Sources are cited"],
+ ms=["After about 2 hours: first meeting", "After about 5 hours: all three", "After about 6 hours: tracker and checklist submitted"],
+ sb=["Upload the files", "Cite meeting titles, dates and URLs", "Do not copy official minutes"],
+ sk=["Prepare template", "Minutes for three meetings", "Decision log and tracker", "Review"],
+ wd=[("Minutes (zip)", "file"), ("Tracker and checklist (zip)", "file")],
+)
+
+B['t129'] = dict(
+ d="Create a milestone project plan with dependencies and a risk register for a fictional office-relocation project, using MS Project, GanttProject or ProjectLibre (free), and produce a Gantt chart, critical path analysis and a RAID log. The project scope and tasks are supplied.",
+ bg="A plan is a model that tells you the earliest finish date and what could delay it. Dependencies and durations create the critical path, and a risk register keeps the team honest about what could go wrong.",
+ pr="Build a schedule of 60 tasks with dependencies, resources and milestones, identify the critical path, run a what-if for a slip and deliver a RAID log.",
+ si=["Work breakdown structure", "Schedule with dependencies and resources", "Critical path analysis and a what-if", "RAID log (risks, assumptions, issues, dependencies)"],
+ so=["Executing the project", "Cost control"],
+ st=["Read the project description in the case data and build a work breakdown structure down to tasks of 1 to 10 days.", "Estimate durations using three-point estimates for the uncertain tasks and compute the expected duration.", "Enter the tasks in the scheduling tool with finish-to-start dependencies (and a few lag or start-to-start where realistic).", "Add resources (a project manager, IT team, facilities, a mover) and check for overallocation, levelling where needed.", "Identify the critical path and the float on other paths, and list the five tasks that most threaten the end date.", "Run a what-if scenario: the lease on the new building slips by two weeks and show the effect on the move date and the options to recover.", "Build the RAID log with at least 12 risks scored by probability and impact, owners and responses, plus assumptions, issues and dependencies.", "Export the Gantt chart and write a one-page summary of the plan, critical path and top risks."],
+ ob=["Create a logical schedule", "Find the critical path", "Manage risk visibly"],
+ ip=[("Relocation project description", "illustrative", "", "Fictional project supplied below."), ("ProjectLibre", "public", "https://www.projectlibre.com", "Free project management tool."), ("PMI: critical path method (overview)", "public", "https://www.pmi.org", "Method reference.")],
+ cd="""Project (fictional): relocate Northstar Insurance (120 staff) from one office to another within 20 weeks. Key facts: new lease starts week 4; fit-out takes 8 weeks after lease start; IT cabling 3 weeks after fit-out begins; furniture lead time 6 weeks; telecom line order lead time 5 weeks; move weekend in week 18; the old lease ends in week 22.""",
+ dl=["Project file (MPP or equivalent) and Gantt chart (PDF)", "RAID log (XLSX)", "Plan summary (PDF, one page)"],
+ ac=["At least 60 tasks with dependencies and no orphan tasks", "The critical path is identified and the float is shown", "The what-if shows the effect and the recovery options", "The RAID log has at least 12 scored risks with owners", "The summary is accurate to the schedule"],
+ ms=["After about 3 hours: WBS and durations", "After about 6 hours: schedule and critical path", "After about 8 hours: RAID log and summary submitted"],
+ sb=["Upload the files", "State the tool used", "Include the three-point estimates"],
+ sk=["WBS and estimates", "Schedule and dependencies", "Critical path and what-if", "RAID log and summary"],
+ wd=[("Plan and Gantt (zip)", "file"), ("RAID log and summary (zip)", "file")],
+)
+
+B['t130'] = dict(
+ d="Facilitate Agile sprint ceremonies (planning, daily stand-up, review, retrospective) for a practice team of volunteers building a small deliverable over a two-week simulated sprint. You prepare the ceremonies, run them, record outcomes and write a sprint report with retrospective actions.",
+ bg="Ceremonies fail when they become status meetings. A facilitator keeps them time-boxed, makes sure everyone contributes, and turns discussion into decisions and actions. The Scrum Guide describes the purpose of each event.",
+ pr="Facilitate sprint planning, ten daily scrums, a review and a retrospective with a small volunteer team, and produce a sprint report and improvement actions.",
+ si=["Preparation of agendas and techniques", "Facilitating five ceremonies", "Sprint goal, backlog and board", "Report with velocity and retrospective actions"],
+ so=["Coaching a real company team", "Scrum certification"],
+ st=["Read the Scrum Guide and write for each ceremony its purpose, time-box, inputs and outputs in a one-page cheat sheet.", "Recruit three to five volunteers and agree a small shared deliverable (for example a short guide or website) and consent to the practice.", "Run sprint planning: agree the sprint goal, select backlog items and break them into tasks, using planning poker for estimates.", "Facilitate the 15-minute daily scrums (or asynchronously on chat if time zones differ), keeping to the three questions and parking side discussions.", "Facilitate the sprint review: demonstrate the work, gather feedback and update the backlog.", "Run a retrospective using a structured technique (start, stop, continue or sailboat), make sure all voices are heard and agree two actions with owners.", "After each ceremony record the time-box adherence, participation and outcomes.", "Write the sprint report with the goal achieved, burn-down, velocity, the retrospective actions and your reflections on facilitation."],
+ ob=["Run ceremonies to the Scrum Guide", "Keep them time-boxed and inclusive", "Convert discussion into actions"],
+ ip=[("The Scrum Guide", "public", "https://scrumguides.org/scrum-guide.html", "Authoritative definition of Scrum."), ("Volunteer team", "tasker", "", "Recruit volunteers with consent."), ("Retromat retrospective techniques", "public", "https://retromat.org", "Retrospective activity ideas.")],
+ dl=["Cheat sheet and agendas (PDF)", "Sprint backlog and board export (PDF)", "Sprint report with retrospective actions (PDF)", "Ceremony observation log (XLSX)"],
+ ac=["Each ceremony has a purpose, agenda and time-box and is held within it", "The sprint goal and backlog are recorded", "The retrospective has at least two owned actions", "The log records participation and time-box adherence", "The report reflects honestly on facilitation"],
+ ms=["After about 3 hours: preparation", "After about 8 hours: planning and the sprint", "After about 12 hours: review, retrospective and report submitted"],
+ sb=["Upload the four deliverables", "Use first names only", "Get consent from the volunteers"],
+ sk=["Prepare ceremonies", "Facilitate planning", "Facilitate daily scrums and review", "Retrospective and report"],
+ wd=[("Backlog, agendas and logs (zip)", "file"), ("Sprint report (PDF)", "file")],
+)
+
+B['t131'] = dict(
+ d="Plan the coordination of a cross-functional product launch for a fictional product: you build the launch plan, workstream owners and dependencies, a communications timeline and go/no-go checklists, and run a launch-readiness review using a simulated status of each workstream.",
+ bg="Launches fail at the seams between teams: marketing announces a feature engineering has not finished, support is unprepared. A launch plan with clear owners, dependencies and objective go/no-go criteria prevents most of these.",
+ pr="Deliver a launch plan, readiness checklists for five workstreams, a RACI, a communications calendar and a go/no-go decision record based on the simulated readiness data.",
+ si=["Launch tiers and objectives", "Workstream plan for marketing, engineering, support, sales and legal", "RACI and a communications calendar", "Go/no-go criteria and the review"],
+ so=["Executing marketing or engineering tasks", "Pricing strategy"],
+ st=["Read the case data and write the launch objectives, the target date and the launch tier (for example Tier 1 with a press release or Tier 2 with a blog post).", "List the workstreams and the deliverables for each, with the dependencies between them (for example help-centre articles depend on final UI).", "Build the plan in a spreadsheet or tool with milestones working back from launch day (T-minus schedule).", "Create the RACI matrix for the 20 key deliverables so each has one accountable person.", "Design the communications calendar: internal announcement, customer email, social posts, press, sales enablement with dates and owners.", "Write the go/no-go criteria for each workstream (for example no open severity-1 bugs, support trained, legal approved) with owners and evidence.", "Hold a readiness review using the status data supplied: assess each criterion, identify the red items and propose mitigations or a delay with reasons.", "Write the decision record and the launch-day command-centre plan (who monitors what, escalation routes, rollback)."],
+ ob=["Coordinate teams around one plan", "Set objective launch criteria", "Make a recorded go or no-go decision"],
+ ip=[("Launch facts and readiness data", "illustrative", "", "Fictional product supplied below."), ("Product Marketing Alliance: launch planning resources", "public", "https://www.productmarketingalliance.com", "Guides and templates."), ("PMI Pulse of the Profession", "public", "https://www.pmi.org", "Background on project success factors.")],
+ cd="""Launch (fictional): Pulse Standup 2.0, launching on 12 March. Workstreams and readiness at T-10 days: Engineering (2 severity-1 bugs open; performance test passed), Marketing (landing page 80% done; press release drafted), Support (macros written, training not done), Sales (deck done, battlecards in progress), Legal (privacy policy update pending).""",
+ dl=["Launch plan with milestones (XLSX)", "RACI and communications calendar (XLSX)", "Go/no-go checklists and decision record (PDF)"],
+ ac=["Every deliverable has one accountable owner", "Dependencies are visible and the T-minus schedule is consistent", "Go/no-go criteria are objective and evidenced", "The review reaches a recorded decision with reasons", "The command-centre plan includes rollback"],
+ ms=["After about 5 hours: objectives and workstreams", "After about 12 hours: RACI and communications", "After about 17 hours: criteria and review", "After about 20 hours: submitted"],
+ sb=["Upload the deliverables", "Mark invented status as illustrative", "Use consistent dates"],
+ sk=["Objectives and workstreams", "RACI and communications", "Go/no-go criteria", "Readiness review and decision"],
+ wd=[("Plan and calendars (zip)", "file"), ("Checklists and decision (PDF)", "file")],
+)
+
+B['t132'] = dict(
+ d="Re-baseline a delayed ERP implementation in a simulated case and write a recovery plan: you analyse the supplied project status, find the root causes of delay, rebuild a realistic schedule, renegotiate scope, and prepare a weekly governance pack for stakeholders.",
+ bg="Troubled projects recover when the team admits the real status, resets expectations with a plan people believe, and fixes the causes of delay. Typical causes are scope creep, data migration underestimated and decision latency.",
+ pr="Produce a diagnostic, a recovery plan with a new baseline and a four-week governance pack for the supplied delayed ERP programme.",
+ si=["Diagnostic of the schedule and budget", "Root-cause analysis", "Revised scope, schedule and cost baseline", "Vendor management actions and governance pack"],
+ so=["Executing the recovery", "Contract disputes"],
+ st=["Read the case data and calculate the schedule performance index and cost performance index from the earned-value data given.", "Find the root causes with interviews you would hold (list questions) and with the evidence in the case (change log, defect trends, decision log), using a fishbone diagram.", "Re-estimate the remaining work bottom-up with the team's velocity and compare it with the vendor's optimistic estimate.", "Propose scope options (descope to a minimum viable go-live, phase 2 for reporting) and evaluate each on time, cost and risk.", "Rebuild the schedule with a new baseline and a go-live date, a buffer for data migration testing and clear exit criteria for each phase.", "Prepare the vendor management plan: roles, weekly checkpoints, acceptance criteria, remedies in the contract summary and escalation path.", "Design the governance pack: one-page dashboard, RAID summary, decisions required, forecast and confidence level, and write the first four weekly editions from the simulated data.", "Write the stakeholder communication plan to reset expectations honestly."],
+ ob=["Diagnose causes of delay", "Reset the baseline credibly", "Restore stakeholder confidence"],
+ ip=[("ERP project data", "illustrative", "", "Fictional programme supplied below."), ("PMI earned value management (overview)", "public", "https://www.pmi.org", "Earned value definitions."), ("GAO Schedule Assessment Guide", "public", "https://www.gao.gov/products/gao-16-89g", "Best practices for schedule assessment.")],
+ cd="""Programme (fictional): Alder Retail ERP replacement, budget $4.2M, planned 12 months, now month 10 with 55% complete. Earned value (illustrative): planned value $3.5M, earned $2.3M, actual cost $3.9M. Issues: 140 change requests (60% accepted), data migration failed two trial loads (38% rejection rate), key business decision makers took 3 weeks on average to respond, vendor team rotated twice.""",
+ dl=["Diagnostic and root-cause analysis (PDF)", "Recovery plan with baseline (PDF and XLSX)", "Four weekly governance packs (PDF)"],
+ ac=["SPI and CPI are calculated correctly and interpreted", "Root causes are supported by evidence", "The revised schedule shows a buffer and exit criteria", "Scope options are compared on time, cost and risk", "The governance packs are consistent with the plan"],
+ ms=["After about 6 hours: diagnostic", "After about 14 hours: options and baseline", "After about 20 hours: vendor plan and governance packs", "After about 24 hours: submitted"],
+ sb=["Upload the three deliverables", "Show earned value calculations", "Mark assumptions"],
+ sk=["Diagnose", "Options and new baseline", "Vendor and governance plan", "Weekly packs"],
+ wd=[("Diagnostic and recovery plan (zip)", "file"), ("Governance packs (PDF)", "file")],
+)
+
+B['t133'] = dict(
+ d="Design the standards, tooling and reporting for a Programme Management Office overseeing a 50-project portfolio at a fictional company: PMO charter, a methodology, templates, a portfolio dashboard design and a roll-out plan, informed by public frameworks (PMI, AXELOS PRINCE2, and the UK Government Project Delivery Standard).",
+ bg="A PMO adds value when it makes the portfolio visible, helps projects succeed and supports decisions on priorities, not when it only collects reports. Governance must be proportionate: light for small projects and stronger for large ones.",
+ pr="Deliver a PMO charter, a tiered governance framework, templates, portfolio prioritisation model, dashboard design and roll-out plan.",
+ si=["PMO charter, roles and services", "Project tiers and stage gates", "Templates for the business case, status, risk and closure", "Portfolio prioritisation scoring and dashboard design", "Roll-out and change plan"],
+ so=["Tool procurement", "Running the PMO"],
+ st=["Read the company facts in the case data and define the problems the PMO must solve and how success will be measured.", "Study three public frameworks (for example the UK Government Project Delivery Standard and the PMBOK Guide overview) and extract the elements that fit a mid-size company.", "Write the charter: purpose, authority, services (reporting, methodology, resource planning, benefits tracking), organisation and funding.", "Define three project tiers by cost, risk and strategic importance, and set stage gates, approvals and reporting frequency for each.", "Create the templates (business case, charter, weekly status, RAID log, change request, closure and lessons learned) one page each.", "Design the portfolio prioritisation model with weighted criteria (strategic fit, benefit, risk, cost, resource availability) and score the 12 sample projects provided.", "Design the dashboard with RAG status, budget versus actual, benefits and resource utilisation, using a mock-up in Excel or Power BI with the sample data.", "Create the roll-out plan: pilot with five projects, training, adoption metrics and a 12-month roadmap."],
+ ob=["Design a proportionate governance system", "Make the portfolio visible", "Plan adoption"],
+ ip=[("Company facts and sample projects", "illustrative", "", "Fictional company supplied below."), ("UK Government Project Delivery Standard", "public", "https://www.gov.uk/government/publications/project-delivery-functional-standard", "Public standard."), ("PMI standards overview", "public", "https://www.pmi.org/pmbok-guide-standards", "Framework background.")],
+ cd="""Company (fictional): Keystone Utilities, 2,500 staff, 50 active projects (IT, facilities, regulatory), annual project spend $38M. Problems: no single list of projects, status reports in 12 formats, 30% of projects over budget, resource conflicts between IT and operations. Sample projects (12) with budget, risk rating and strategic score are supplied in the same pattern.""",
+ dl=["PMO playbook (PDF, 20 to 30 pages)", "Templates (DOCX and XLSX)", "Dashboard mock-up with sample data (XLSX or PBIX)", "Roll-out plan (PDF)"],
+ ac=["The charter states authority, services and success measures", "Tiers have different gates and reporting", "The prioritisation model ranks the 12 sample projects with transparent scores", "The dashboard shows RAG, budget, benefits and resources", "The roll-out plan has pilot, training and adoption metrics"],
+ ms=["After about 8 hours: framework study and charter", "After about 20 hours: tiers and templates", "After about 32 hours: prioritisation and dashboard", "After about 40 hours: roll-out plan submitted"],
+ sb=["Upload the four deliverables", "Cite the frameworks", "Mark sample data as illustrative"],
+ sk=["Study and charter", "Tiers and templates", "Prioritisation model", "Dashboard", "Roll-out plan"],
+ wd=[("Playbook and templates (zip)", "file"), ("Dashboard and roll-out plan (zip)", "file")],
+)

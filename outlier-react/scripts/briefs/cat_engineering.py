@@ -1,0 +1,125 @@
+B = {}
+
+B['t099'] = dict(
+ d="Redraw 15 hand-sketched parts as clean 2D technical drawings. Because private sketches are not available, you draw simple mechanical parts from the 15 dimensioned sketches described in the case data (illustrative) and from public-domain engineering drawings of the NASA or US patent offices, creating dimensioned drawings in AutoCAD, LibreCAD or FreeCAD.",
+ bg="A technical drawing is a contract: it tells a machinist the geometry, tolerances and finish. Common errors include missing dimensions, duplicate dimensions and wrong projections. Following standards (ASME Y14.5 or ISO 128) makes a drawing unambiguous.",
+ pr="Produce 15 drawings with orthographic views, dimensions, title blocks and notes, correct to the stated standards and checked against the sketch data.",
+ si=["15 parts with 2 or 3 views each", "Dimensions, tolerances and notes", "Layers, line types and title block", "DWG and PDF output"],
+ so=["3D modelling", "Manufacturing"],
+ st=["Read the sketch descriptions in the case data and list each part's features, dimensions and material.", "Set up a template with units in millimetres, a sheet size A3, layers (outline, hidden, centre, dimension, text) and a title block.", "Draw the front view of the first part using exact coordinates, then project the top and side views with construction lines.", "Add dimensions following the rules (no duplicates, from a datum, outside the view, no dimensions to hidden lines) and general tolerances from ISO 2768-m.", "Add notes: material, finish, break sharp edges, and the surface texture where needed.", "Check against the sketch data by comparing each dimension and verify with the measuring tool in CAD that the drawn lengths match.", "Repeat for all 15 parts, reusing the template and keeping consistent style.", "Export each as PDF and DWG and complete a checklist (views, dimensions, title block, units, layers) for every drawing."],
+ ob=["Create unambiguous drawings", "Follow drawing standards", "Check against the source dimensions"],
+ ip=[("Sketch descriptions for 15 parts", "illustrative", "", "Invented parts supplied below."), ("FreeCAD and LibreCAD", "public", "https://www.freecad.org", "Free CAD tools."), ("ISO 2768 general tolerances (overview)", "public", "https://www.iso.org/standard/7748.html", "Standard referenced for general tolerances."), ("NASA technical drawings (public domain)", "public", "https://www.nasa.gov/", "Public-domain engineering examples.")],
+ cd="""Parts (illustrative, 3 of 15): P01 Mounting plate 120 x 80 x 6 mm, four 8 mm holes at 10 mm from each corner, material aluminium 6061. P02 Shaft 25 mm diameter x 150 mm long with a 6 x 6 x 20 mm keyway at one end and a 2 mm chamfer, steel 1045. P03 L-bracket 60 x 40 x 40 mm, 4 mm thick, two 6 mm holes on each leg, bend radius 4 mm.
+General tolerance ISO 2768-m; finish Ra 3.2 unless noted.""",
+ dl=["15 drawings (DWG)", "15 drawings (PDF)", "Checklist (XLSX)"],
+ ac=["Each drawing has the views needed to define the part, with no missing or duplicate dimensions", "Dimensions match the case data exactly", "Layers, line types and title blocks are used consistently", "Tolerances and notes are present", "The checklist is complete for all 15"],
+ ms=["After about 1.5 hours: template and first drawing", "After about 4.5 hours: ten drawings", "After about 6 hours: all drawings, checks and exports submitted"],
+ sb=["Upload one zip for DWG and one for PDF", "Name files P01 to P15", "State the software used"],
+ sk=["Template and standards", "Draw the first five parts", "Draw the remaining ten", "Check and export"],
+ wd=[("Drawings (zip)", "file"), ("Checklist (XLSX)", "file")],
+)
+
+B['t100'] = dict(
+ d="Write preventive-maintenance checklists for common plant equipment (centrifugal pump, electric motor, air compressor, conveyor, and a gearbox), using manufacturers' public manuals and OSHA guidance. You create task lists with intervals, tools, safety steps and acceptance values.",
+ bg="Preventive maintenance reduces breakdowns when tasks are specific and scheduled. Good checklists give the step, tool, limits (for example vibration or temperature) and the lock-out/tag-out step that protects workers.",
+ pr="Write five checklists with at least 12 tasks each, with intervals taken from public manufacturer manuals, and a one-page safety summary.",
+ si=["Five equipment types", "Tasks by interval (daily, weekly, monthly, annual)", "Safety, tools and acceptance values", "A format that can be printed or loaded in a CMMS"],
+ so=["Repair procedures", "Equipment selection"],
+ st=["Choose a specific public model manual for each of the five equipment types (for example from Grundfos, ABB, Atlas Copco, Dodge or a university facility page) and record the document URLs.", "Extract the manufacturer's recommended maintenance tasks and intervals and record the page number for each.", "Add the safety step to every checklist: lock-out/tag-out per OSHA 1910.147, personal protective equipment and stored energy release.", "Write tasks in action form (Check, Measure, Lubricate, Replace) with the tool needed, the acceptance value and what to record.", "Order tasks logically (isolate, inspect, measure, service, restore, test) and group by interval.", "Create the checklist layout with tick boxes, signature and date fields, and a column for notes and parts used.", "Have another person read one checklist and perform a dry-run in a walkthrough to find unclear steps, then revise.", "Write the one-page safety summary of hazards for the five equipment types."],
+ ob=["Create practical, specific checklists", "Base intervals on manuals", "Include safety steps"],
+ ip=[("Manufacturer manuals", "tasker", "", "Select public manuals and cite page numbers."), ("OSHA: Control of hazardous energy (lockout/tagout)", "public", "https://www.osha.gov/control-hazardous-energy", "Safety requirements."), ("Reliabilityweb maintenance resources", "public", "https://reliabilityweb.com", "Maintenance practice background.")],
+ dl=["Five checklists (PDF and DOCX)", "Source table with page references (XLSX)", "Safety summary (PDF)"],
+ ac=["Each checklist has at least 12 tasks with an interval, tool and acceptance value", "Every interval and limit cites a manual page", "Lock-out/tag-out and PPE steps are included", "A walkthrough review is recorded", "Tasks use clear action wording"],
+ ms=["After about 2 hours: manuals chosen", "After about 4 hours: tasks extracted and drafted", "After about 5 hours: review and summary submitted"],
+ sb=["Upload the deliverables", "List the manual title, URL and page for each source", "Label as generic guidance, not site-specific"],
+ sk=["Find manuals", "Extract tasks", "Write checklists with safety steps", "Review and summary"],
+ wd=[("Checklists (zip)", "file"), ("Source table and safety summary (zip)", "file")],
+)
+
+B['t101'] = dict(
+ d="Compile a costed bill of materials (BOM) with alternates for a consumer device you choose from open-hardware projects (for example a Raspberry Pi based sensor kit or an open-source e-reader), using public distributor listings (DigiKey, Mouser, Adafruit) for prices at three quantities.",
+ bg="A BOM drives purchasing and cost. Mistakes include missing parts, wrong package types, single-source components and prices that ignore quantity breaks. Alternates protect against shortages.",
+ pr="Build a BOM of at least 40 line items from an open-hardware design, with part numbers, manufacturers, prices at 100, 1,000 and 10,000 units and a validated alternate for the ten riskiest parts.",
+ si=["An open-hardware design with a published BOM or schematic", "Distributor sourcing and pricing", "Alternates and risk flags", "Cost roll-up and a sourcing note"],
+ so=["Placing orders", "PCB layout"],
+ st=["Choose an open-hardware design (for example from Adafruit, SparkFun or OSHWA-certified projects) whose schematic and part list are public, and record its licence.", "Build the BOM table: reference designators, description, value and package, manufacturer, manufacturer part number and quantity per unit.", "Source each part from at least two distributors, recording the distributor part number, stock and price breaks, and date of access.", "Calculate extended cost at 100, 1,000 and 10,000 units, using the correct quantity-break price, and total the BOM.", "Flag the ten riskiest parts (single source, long lead time, low stock) and propose a pin-compatible or functionally equivalent alternate with datasheet evidence.", "Check that the alternates match the package, key parameters and temperature range by comparing datasheets in a table.", "Add the assembly and PCB cost assumptions, the yield allowance and the resulting unit cost at each quantity.", "Write the sourcing note with the risks, the biggest cost drivers and three cost reduction ideas."],
+ ob=["Create an accurate, costed BOM", "Identify supply risk", "Propose valid alternates"],
+ ip=[("An open-hardware project", "tasker", "", "Choose one with a published schematic and licence (for example from https://www.oshwa.org/ certified projects)."), ("DigiKey", "public", "https://www.digikey.com", "Pricing and stock."), ("Mouser", "public", "https://www.mouser.com", "Pricing and stock.")],
+ dl=["Costed BOM with alternates (XLSX)", "Sourcing note (PDF)", "Datasheet comparison for the alternates (XLSX or PDF)"],
+ ac=["At least 40 line items with manufacturer part numbers", "Prices come from two distributors with access dates and the right quantity breaks", "Ten risky parts have valid alternates with datasheet evidence", "The total cost is correct at three quantities", "Assumptions for assembly and yield are stated"],
+ ms=["After about 2 hours: design chosen and BOM drafted", "After about 5.5 hours: sourcing and pricing", "After about 8 hours: alternates and note submitted"],
+ sb=["Upload the three files", "State the design name, repository and licence", "Date the pricing"],
+ sk=["Choose the design and build the BOM", "Source and price", "Alternates and risk", "Cost roll-up and note"],
+ wd=[("BOM workbook (XLSX)", "file"), ("Sourcing note (PDF)", "file")],
+)
+
+B['t102'] = dict(
+ d="Design a part for FDM 3D printing (a snap-fit enclosure with a lid for a Raspberry Pi Zero) and validate fit with a tolerance test print or a documented tolerance analysis. You use Fusion 360 (free personal licence) or FreeCAD, and follow design-for-manufacture rules.",
+ bg="FDM parts have limits: overhangs, minimum wall thickness and shrinkage affect fit, and a design that looks perfect on screen can fail on a printer. Tolerance calibration prints show the gap needed for the printer and material.",
+ pr="Deliver a parametric CAD model, an STL, a tolerance study and a test report showing fit of the lid and board.",
+ si=["Enclosure and lid with snap fits", "A tolerance calibration coupon", "Print settings and results", "A report"],
+ so=["Injection-moulding design", "Electronics design"],
+ st=["Download the Raspberry Pi Zero mechanical drawing from the Raspberry Pi documentation and note the board outline, hole positions and port cutouts.", "Create a parametric model with user parameters for wall thickness (2 mm), clearance and snap-fit dimensions, and model the base with standoffs and cutouts.", "Design the lid with a snap-fit lip using cantilever beam calculations for deflection, and keep overhangs under 45 degrees or add supports.", "Create a tolerance coupon with pegs and holes at clearances of 0.1 to 0.5 mm in 0.1 mm steps and print it (or use a local makerspace or an online print service).", "Measure the coupon fit and choose the clearance for the material; record layer height, nozzle, temperature and material.", "Update the parameters, print the enclosure and test the fit with a Pi Zero or the 3D model of one, and record any issue.", "Iterate once to fix problems found and document the changes between versions.", "Write the report with the drawings, settings, measured fits, photographs and lessons learned."],
+ ob=["Design for the process", "Validate fit with a test", "Document the tolerance results"],
+ ip=[("Raspberry Pi Zero mechanical specifications", "public", "https://datasheets.raspberrypi.com/rpizero/raspberry-pi-zero-mechanical-drawing.pdf", "Board dimensions."), ("Fusion 360 personal use", "public", "https://www.autodesk.com/products/fusion-360/personal", "Free for personal use."), ("Prusa: design guidelines for 3D printing", "public", "https://www.hubs.com/knowledge-base/key-design-considerations-3d-printing/", "Design rules.")],
+ dl=["CAD model (F3D or FCStd) and STL", "Tolerance test results (XLSX)", "Test report with photographs (PDF)"],
+ ac=["The model is parametric and the parameters are documented", "The lid snaps on and the board fits with the measured clearance", "Walls and overhangs follow the printing rules", "The tolerance coupon results support the chosen clearance", "The report records the settings and the second iteration"],
+ ms=["After about 3 hours: first model", "After about 6 hours: coupon and clearance", "After about 10 hours: final print and report submitted"],
+ sb=["Upload CAD, STL, results and report", "State the printer and material", "Include photographs"],
+ sk=["Model the enclosure", "Tolerance coupon", "Print and test fit", "Iterate and report"],
+ wd=[("CAD and STL files (zip)", "file"), ("Test report (PDF)", "file")],
+)
+
+B['t103'] = dict(
+ d="Run stress and fatigue analysis on a structural bracket using FreeCAD FEM or SolidWorks Simulation, with load cases defined in this brief (illustrative), a mesh convergence study and a design change that meets a safety-factor target. You document the method and recommend design changes.",
+ bg="Finite element analysis gives accurate answers only when the boundary conditions, material data and mesh are right. Engineers check results with a hand calculation and a mesh convergence study before trusting a stress number.",
+ pr="Analyse the bracket for two load cases and fatigue, achieve a static safety factor of at least 2.0 and a fatigue life of at least 1 million cycles with a revised design, and verify the model with a hand calculation.",
+ si=["CAD bracket from the specification", "Static analysis with convergence study", "Fatigue estimate with stress-life data", "Redesign and report"],
+ so=["Dynamic and thermal analysis", "Physical testing"],
+ st=["Read the load cases and material in the case data and model the bracket (a steel L-bracket with two bolt holes and a gusset option) in CAD.", "Do a hand calculation of the bending stress at the root of the bracket for the main load and note the expected range.", "Set up the FEA: fixed supports at the bolt holes, the load as a force on the pin face and a material model with Young's modulus, yield and fatigue data from a public source (MatWeb or ASM).", "Run the static analysis on three mesh sizes and plot the maximum von Mises stress against element size to show convergence within 5 percent.", "Compare the converged result with the hand calculation and explain any difference, such as stress concentrations near the fillet.", "Estimate fatigue life using the S-N curve and a Goodman mean-stress correction for the cyclic load in the case data.", "Redesign (larger fillet, gusset, thicker section) to meet the targets while keeping mass under 1.5 kg and rerun the analyses.", "Write the report with the model, method, results, convergence plot, redesign and recommendations."],
+ ob=["Verify the model by hand calculation", "Show mesh convergence", "Meet safety and fatigue targets"],
+ ip=[("Load cases and bracket specification", "illustrative", "", "Illustrative engineering data supplied below."), ("FreeCAD FEM workbench", "public", "https://wiki.freecad.org/FEM_Module", "Free FEA tools."), ("MatWeb material properties", "public", "https://www.matweb.com", "Public material data."), ("NASA technical standards for structural analysis (NASA-STD-5001)", "public", "https://standards.nasa.gov", "Reference on factors of safety.")],
+ cd="""Bracket (illustrative): steel S355 (E = 205 GPa, yield 355 MPa, ultimate 470 MPa), 8 mm plate, base 120 x 80 mm with two M10 bolts, vertical leg 100 mm high.
+Load case 1: static 2.5 kN vertical on the end of the leg, 90 mm from the base. Load case 2: 1.0 kN horizontal at the same point. Fatigue: load case 1 cycles from 0 to 2.5 kN at 5 Hz, target life 1,000,000 cycles. Target safety factor 2.0 on yield. Mass limit 1.5 kg.""",
+ dl=["FEA models and CAD (zip)", "Report with convergence plot and redesign (PDF)", "Hand calculation sheet (PDF or XLSX)"],
+ ac=["Mesh convergence is shown to within 5 percent", "The FEA result agrees with the hand calculation within a stated tolerance and differences are explained", "The redesigned bracket meets the 2.0 safety factor and 1,000,000 cycles", "Mass is under 1.5 kg", "Material data are cited"],
+ ms=["After about 3 hours: model and hand calculation", "After about 8 hours: static analysis and convergence", "After about 12 hours: fatigue and redesign", "After about 14 hours: report submitted"],
+ sb=["Upload the zip and PDFs", "State the software and version", "Show units on all results"],
+ sk=["CAD and hand calculation", "Static FEA and convergence", "Fatigue", "Redesign and report"],
+ wd=[("FEA files (zip)", "file"), ("Analysis report (PDF)", "file")],
+)
+
+B['t104'] = dict(
+ d="Design an electrical control panel for a small conveyor system: schematics, panel layout and a parts list, following the NFPA 79 and IEC 60204-1 principles. The conveyor spec is illustrative; the work is a design package prepared in QElectroTech or KiCad and a spreadsheet.",
+ bg="Industrial control panels must be safe and maintainable: correct protection, emergency stop circuits, clear labelling and room for heat dissipation. Standards set rules for wire colours, conductor sizing and stop categories.",
+ pr="Produce a design package for a 3-phase conveyor panel with a motor starter, PLC inputs and outputs, an emergency stop and a parts list, validated by calculations.",
+ si=["Power and control schematics", "Component selection and sizing calculations", "Panel layout with dimensions and heat check", "Bill of materials"],
+ so=["PLC programming", "Panel build"],
+ st=["Read the specification in the case data: motor ratings, supply, controls and environment.", "Size the protection: calculate the motor full-load current, select the circuit breaker or motor protector, contactor and overload relay and show the calculation referring to the tables in NFPA 70 or IEC practice.", "Choose conductor sizes from the current and the standard tables, and document the voltage drop for the longest run.", "Draw the power schematic (supply, isolator, protection, contactor, overload, motor) and the control schematic (24 V DC supply, start and stop, E-stop, PLC inputs and outputs).", "Design the E-stop circuit to a Category 0 stop with a safety relay and describe the reset logic.", "Create the layout of the panel with the DIN rail, ducts, terminal blocks and spacing, and estimate the heat dissipation to check that the enclosure size is enough.", "Label every component and wire with a consistent scheme and create the terminal plan.", "Compile the BOM with manufacturer part numbers and a short design report listing the standards applied and the assumptions."],
+ ob=["Size and protect the circuit correctly", "Implement the safety circuit", "Create a buildable design package"],
+ ip=[("Conveyor specification", "illustrative", "", "Illustrative requirements supplied below."), ("QElectroTech", "public", "https://qelectrotech.org", "Free schematic tool."), ("NFPA 79 overview", "public", "https://www.nfpa.org/codes-and-standards/nfpa-79-standard-development/79", "Electrical standard for industrial machinery."), ("Manufacturer datasheets (Schneider, Siemens, Phoenix Contact)", "tasker", "", "Use public datasheets for the components.")],
+ cd="""Conveyor (illustrative): 3-phase 400 V 50 Hz supply (or 480 V 60 Hz if you prefer the US variant), one 1.5 kW induction motor (full-load current per the nameplate you select), 24 V DC control, two photo-eye inputs, one start and one stop pushbutton, one E-stop on the panel and one remote, a green run lamp and a red fault lamp, ambient 40 C, IP54.""",
+ dl=["Schematics (PDF and the source file)", "Calculations (XLSX or PDF)", "Panel layout drawing (PDF)", "BOM (XLSX)", "Design report (PDF)"],
+ ac=["Component ratings are justified by the calculations", "The E-stop circuit is described and drawn as a Category 0 stop", "Wire sizing and voltage drop are calculated", "The layout allows spacing and heat dissipation", "The BOM has manufacturer part numbers and the standards are cited"],
+ ms=["After about 4 hours: calculations", "After about 11 hours: schematics", "After about 15 hours: layout and BOM", "After about 18 hours: report submitted"],
+ sb=["Upload the five deliverables", "State the standard version used", "Mark that the design needs review by a licensed engineer before building"],
+ sk=["Sizing calculations", "Power and control schematics", "Safety circuit", "Panel layout and heat check", "BOM and report"],
+ wd=[("Schematics, layout and BOM (zip)", "file"), ("Calculations and report (PDF)", "file")],
+)
+
+B['t105'] = dict(
+ d="Conduct an FMEA and root-cause analysis for repeat failures on a production line using real public incident investigations from the US Chemical Safety Board (CSB) as the case material. You analyse one report in depth, build an FMEA and prepare a corrective-action plan.",
+ bg="Repeat failures happen when organisations fix symptoms. FMEA ranks failure modes by severity, occurrence and detectability, and root-cause tools such as five-whys and fault trees find the system causes. Public CSB reports provide detailed, credible case material.",
+ pr="Analyse one CSB investigation report involving an industrial equipment failure, produce an FMEA of at least 20 failure modes, a root-cause analysis and a corrective-action plan with owners and measures.",
+ si=["Case selection and summary", "FMEA with RPN or action priority", "Root-cause analysis and fault tree", "Corrective-action and verification plan"],
+ so=["Legal liability determinations", "Implementing actions"],
+ st=["Choose one CSB investigation report (for example a combustible dust, pressure vessel or maintenance-related failure) from the CSB site and write a one-page factual summary with the timeline.", "Define the system and its functions and list the components and operating steps involved in the incident.", "Build the FMEA table with at least 20 failure modes: function, failure mode, effect, cause, current controls, severity, occurrence and detection ratings with justification, and the action priority (AIAG-VDA).", "Use the report's evidence to calibrate the ratings and note where the ratings are judgement.", "Do a five-whys and build a fault tree for the main event, citing the report's findings for every branch.", "Write corrective actions in the hierarchy of controls (eliminate, substitute, engineer, administrative, PPE), with owner roles, dates and a measure of effectiveness.", "Re-rate the top five failure modes after the proposed actions to show the expected risk reduction.", "Write the report, comparing your recommendations with the CSB's own and noting differences."],
+ ob=["Analyse failures systematically", "Link actions to causes", "Show expected risk reduction"],
+ ip=[("US Chemical Safety Board investigations", "public", "https://www.csb.gov/investigations/", "Public investigation reports."), ("FMEA handbook (AIAG and VDA) summary", "public", "https://www.aiag.org", "Method reference."), ("NASA FMEA guidance", "public", "https://standards.nasa.gov", "Public guidance on failure analysis.")],
+ dl=["FMEA workbook (XLSX)", "Root-cause analysis and fault tree (PDF)", "Corrective-action plan and report (PDF)"],
+ ac=["At least 20 failure modes with justified ratings", "Every root cause cites the investigation report", "Corrective actions follow the hierarchy of controls and have measures", "Post-action ratings show the reduction for the top five risks", "The report distinguishes the source's findings from your own judgement"],
+ ms=["After about 6 hours: report chosen and summarised", "After about 15 hours: FMEA", "After about 24 hours: root cause and actions", "After about 30 hours: report submitted"],
+ sb=["Upload the deliverables", "Cite the report number and pages", "Do not state legal conclusions"],
+ sk=["Case summary", "FMEA", "Root cause and fault tree", "Corrective actions", "Report"],
+ wd=[("FMEA workbook (XLSX)", "file"), ("Analysis and plan (PDF)", "file")],
+)

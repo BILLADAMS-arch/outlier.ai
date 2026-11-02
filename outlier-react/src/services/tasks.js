@@ -9,11 +9,11 @@ export const listCategories = async () => unwrap(await supabase.from('categories
 export const getTask = async (id) => unwrap(await supabase.from('tasks').select('*').eq('id', id).maybeSingle())
 
 const toRow = (t) => ({
-  id: t.id, title: t.title, category_id: t.category, image: t.image, difficulty: t.difficulty, hourly_rate: t.hourlyRate,
+  id: t.id, title: t.title, category_id: t.category ?? t.categoryId, image: t.image, difficulty: t.difficulty, hourly_rate: t.hourlyRate,
   currency: 'USD', rate_type: t.rateType, estimated_hours: t.estimatedHours, experience: t.experience, skills: t.skills,
   summary: t.summary, description: t.description, responsibilities: t.responsibilities, deliverables: t.deliverables,
   qualifications: t.qualifications, apply_instructions: t.applyInstructions, objectives: t.objectives,
-  instructions: t.instructions || null, guidelines: t.guidelines, workspace_type: t.workspaceType || null, workspace_config: t.workspaceConfig || {}, reference_links: t.referenceLinks || [], posted_at: t.postedAt, deadline: t.deadline || null, status: t.status,
+  instructions: t.instructions || null, guidelines: t.guidelines, workspace_type: t.workspaceType || null, workspace_config: t.workspaceConfig || {}, reference_links: t.referenceLinks || [], brief: t.brief || {}, posted_at: t.postedAt, deadline: t.deadline || null, status: t.status,
 })
 export const saveTask = async (t) => unwrap(await supabase.from('tasks').upsert(toRow(t)).select().single())
 export const deleteTask = async (id) => unwrap(await supabase.from('tasks').delete().eq('id', id))
@@ -32,5 +32,35 @@ export async function importStarterLibrary() {
     const { error } = await supabase.from('tasks').upsert(rows.slice(i, i + 50))
     if (error) throw new Error(error.message)
   }
+  await applyBriefs()
   return seed.tasks.length
+}
+
+/**
+ * Saves the detailed project briefs from public/data/briefs.json into the matching projects: description, objectives,
+ * step-by-step instructions, deliverables, structured brief, tailored workspace checklist and extra reference links.
+ * Projects that are not in the file are left alone. Admin only via RLS. Returns how many projects were updated.
+ */
+export async function applyBriefs() {
+  const res = await fetch('/data/briefs.json')
+  if (!res.ok) throw new Error('The briefs file could not be loaded.')
+  const briefs = await res.json()
+  const ids = Object.keys(briefs)
+  const existing = unwrap(await supabase.from('tasks').select('id, reference_links').in('id', ids))
+  const current = new Map(existing.map((t) => [t.id, t.referenceLinks || []]))
+  let done = 0
+  for (let i = 0; i < ids.length; i += 10) {
+    await Promise.all(ids.slice(i, i + 10).filter((id) => current.has(id)).map(async (id) => {
+      const b = briefs[id]
+      const links = [...current.get(id)]
+      for (const l of b.extraLinks || []) if (!links.some((x) => x.url === l.url)) links.push(l)
+      const { error } = await supabase.from('tasks').update({
+        description: b.description, objectives: b.objectives, instructions: b.instructions, guidelines: b.guidelines, deliverables: b.deliverables,
+        brief: b.brief, workspace_config: b.workspaceConfig, reference_links: links,
+      }).eq('id', id)
+      if (error) throw new Error(`${id}: ${error.message}`)
+      done += 1
+    }))
+  }
+  return done
 }

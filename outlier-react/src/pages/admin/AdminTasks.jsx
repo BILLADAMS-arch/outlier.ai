@@ -10,6 +10,7 @@ import { CATEGORY_TYPE, WORKSPACE_TYPES, configFor } from '../../utils/workspace
 import ResourcesDialog from './ResourcesDialog'
 import { money } from '../../utils/format'
 import { formatRefLinks, parseRefLinks } from '../../utils/refLinks'
+import { formatInputs, missingBrief, parseInputs } from '../../utils/brief'
 import { DifficultyBadge, EmptyState, Icon, Loaded } from '../../components/ui'
 import FormDialog from '../../components/FormDialog'
 
@@ -45,6 +46,7 @@ export default function AdminTasks() {
               <input type="search" placeholder="Search projects…" aria-label="Search projects" value={q} onChange={(e) => setQ(e.target.value)} />
               <select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="all">All statuses</option><option value="published">Published</option><option value="draft">Draft</option><option value="archived">Archived</option></select>
               <select aria-label="Category" value={cat} onChange={(e) => setCat(e.target.value)}><option value="">All categories</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+              <button className="btn secondary" onClick={() => act(async () => { const n = await tasksApi.applyBriefs(); toast.success(`${n} detailed briefs saved.`) })} title="Saves the detailed, category-specific briefs for the 140 starter projects">Apply detailed briefs</button>
               <button className="btn secondary" onClick={applyDefaults} title="Saves the default working environment into projects that have none">Apply default environments</button>
               <button className="btn" onClick={() => setEditing(null)}><Icon name="fa-plus" /> New project</button>
             </div>
@@ -60,7 +62,7 @@ export default function AdminTasks() {
                     <td className="acts">
                       <button className="link-btn" onClick={() => setEditing(t)}>Edit</button>
                       <button className="link-btn" onClick={() => setResourcesFor(t)}>Resources</button>
-                      <button className="link-btn" onClick={() => act(() => tasksApi.saveTask({ ...t, status: t.status === 'published' ? 'draft' : 'published' }), t.status === 'published' ? 'Project unpublished.' : 'Project published.')}>{t.status === 'published' ? 'Unpublish' : 'Publish'}</button>
+                      <button className="link-btn" onClick={() => act(async () => { if (t.status !== 'published') { const m = missingBrief(t); if (m.length) throw new Error(`Add the ${m.join(', ')} before publishing.`) } await tasksApi.saveTask({ ...t, status: t.status === 'published' ? 'draft' : 'published' }) }, t.status === 'published' ? 'Project unpublished.' : 'Project published.')}>{t.status === 'published' ? 'Unpublish' : 'Publish'}</button>
                       {t.status !== 'archived' && <button className="link-btn" onClick={() => act(() => tasksApi.saveTask({ ...t, status: 'archived' }), 'Project archived.')}>Archive</button>}
                       <button className="link-btn danger-text" onClick={() => setConfirm(t)}>Delete</button>
                     </td>
@@ -81,13 +83,17 @@ export default function AdminTasks() {
   )
 }
 
+const briefToForm = (t) => { const b = t.brief || {}; return { background: b.background || '', problem: b.problem || '', scopeIn: lines(b.scopeIn), scopeOut: lines(b.scopeOut), inputs: formatInputs(b.inputs), caseData: b.caseData || '', acceptance: lines(b.acceptance), milestones: lines(b.milestones), submission: lines(b.submission) } }
+const formToBrief = (d) => ({ background: d.background.trim(), problem: d.problem.trim(), scopeIn: toList(d.scopeIn), scopeOut: toList(d.scopeOut), inputs: parseInputs(d.inputs), caseData: d.caseData.trim(), acceptance: toList(d.acceptance), milestones: toList(d.milestones), submission: toList(d.submission) })
+const formToTask = (d) => { let inputs = []; try { inputs = parseInputs(d.inputs) } catch { /* reported separately */ } return { instructions: d.instructions, brief: { ...formToBrief({ ...d, inputs: '' }), inputs } } }
+
 function TaskForm({ task: t, categories, onClose, onSaved }) {
   const isNew = !t
   const imgOptions = [...(isNew ? [] : [{ value: 'keep', label: 'Keep current image' }]), ...[1, 2, 3].map((n) => ({ value: String(n), label: `Category photo ${n}` }))]
   return (
     <FormDialog wide title={isNew ? 'New project' : 'Edit project'} confirmLabel={isNew ? 'Create project' : 'Save changes'} onClose={onClose}
-      initial={t ? { ...t, category: t.categoryId, rate: t.hourlyRate, hours: t.estimatedHours, skills: t.skills.join(', '), responsibilities: lines(t.responsibilities), deliverables: lines(t.deliverables), qualifications: lines(t.qualifications), objectives: lines(t.objectives), guidelines: lines(t.guidelines), apply: t.applyInstructions, instructions: t.instructions || '', deadline: t.deadline || '', refLinks: formatRefLinks(t.referenceLinks), imagePick: 'keep', ...configToForm(t) }
-        : { category: categories[0]?.id, difficulty: 'Easy', rateType: 'fixed', status: 'draft', workspaceType: '', tools: '', subtasks: '', deliverables: '', columns: '', targetRows: '', minWords: '', allowAudio: false, requirements: '', experience: '1–2 years of practical experience', refLinks: '', apply: 'Submit a short note describing relevant experience and your availability.', imagePick: '1' }}
+      initial={t ? { ...t, category: t.categoryId, rate: t.hourlyRate, hours: t.estimatedHours, skills: t.skills.join(', '), responsibilities: lines(t.responsibilities), deliverables: lines(t.deliverables), qualifications: lines(t.qualifications), objectives: lines(t.objectives), guidelines: lines(t.guidelines), apply: t.applyInstructions, instructions: t.instructions || '', deadline: t.deadline || '', refLinks: formatRefLinks(t.referenceLinks), ...briefToForm(t), imagePick: 'keep', ...configToForm(t) }
+        : { category: categories[0]?.id, difficulty: 'Easy', rateType: 'fixed', status: 'draft', workspaceType: '', tools: '', subtasks: '', deliverables: '', columns: '', targetRows: '', minWords: '', allowAudio: false, requirements: '', experience: '1–2 years of practical experience', refLinks: '', background: '', problem: '', scopeIn: '', scopeOut: '', inputs: '', caseData: '', acceptance: '', milestones: '', submission: '', apply: 'Submit a short note describing relevant experience and your availability.', imagePick: '1' }}
       fields={[
         { name: 'title', label: 'Title', required: true, maxLength: 120 },
         { name: 'category', label: 'Category', type: 'select', options: categories.map((c) => ({ value: c.id, label: c.name })) },
@@ -97,8 +103,17 @@ function TaskForm({ task: t, categories, onClose, onSaved }) {
         { name: 'rateType', label: 'Rate type', type: 'select', options: ['fixed', 'negotiable'] },
         { name: 'summary', label: 'Short summary (card text)', type: 'textarea', required: true, maxLength: 200 },
         { name: 'description', label: 'Full description / project overview', type: 'textarea', required: true, maxLength: 1500 },
+        { name: 'background', label: 'Project background and context', type: 'textarea', maxLength: 2500, rows: 4, hint: 'Why this work exists and who it is for.' },
+        { name: 'problem', label: 'Problem statement / business objective', type: 'textarea', maxLength: 1500, rows: 3 },
+        { name: 'scopeIn', label: 'In scope (one per line)', type: 'textarea', maxLength: 1500 },
+        { name: 'scopeOut', label: 'Out of scope (one per line)', type: 'textarea', maxLength: 1000 },
+        { name: 'inputs', label: 'Input materials (one per line: Title | public, illustrative or tasker | https://link | note)', type: 'textarea', maxLength: 3000, rows: 4, hint: 'public = a real public source with a link; illustrative = invented case data shown below; tasker = the tasker finds it. Upload real project files with the Resources button.' },
+        { name: 'caseData', label: 'Illustrative case-study data (optional, shown with a clear "illustrative" label)', type: 'textarea', maxLength: 6000, rows: 5 },
         { name: 'objectives', label: 'Objectives (one per line, shown in onboarding)', type: 'textarea', maxLength: 1000 },
         { name: 'instructions', label: 'Detailed instructions (one step per line, shown in onboarding)', type: 'textarea', maxLength: 3000, rows: 5 },
+        { name: 'acceptance', label: 'Acceptance criteria and quality standards (one per line)', type: 'textarea', maxLength: 2500, rows: 4 },
+        { name: 'milestones', label: 'Milestones (one per line)', type: 'textarea', maxLength: 1000 },
+        { name: 'submission', label: 'Submission requirements (one per line: format, naming, what to upload)', type: 'textarea', maxLength: 1500 },
         { name: 'guidelines', label: 'Project guidelines (one per line, shown in onboarding)', type: 'textarea', maxLength: 1000 },
         { name: 'skills', label: 'Required skills (comma separated)', required: true },
         { name: 'experience', label: 'Experience level', required: true },
@@ -117,7 +132,7 @@ function TaskForm({ task: t, categories, onClose, onSaved }) {
         { name: 'targetRows', label: 'Required number of valid rows (data entry)', type: 'number', min: 0, step: 1 },
         { name: 'minWords', label: 'Minimum words (writing)', type: 'number', min: 0, step: 1 },
         { name: 'allowAudio', label: 'Let the tasker upload audio files (transcription)', type: 'checkbox' },
-        { name: 'requirements', label: 'Submission requirements (one per line)', type: 'textarea', maxLength: 1000 },
+        { name: 'requirements', label: 'Extra checks before submitting (one per line, shown in the workspace)', type: 'textarea', maxLength: 1000 },
         { name: 'imagePick', label: 'Image', type: 'select', options: imgOptions },
         { name: 'imageUrl', label: '…or an Unsplash image URL', placeholder: 'https://images.unsplash.com/photo-…', hint: 'Must be an images.unsplash.com photo URL; it is checked before saving.' },
         { name: 'file', label: '…or upload an image', type: 'file', accept: 'image/jpeg,image/png,image/webp' },
@@ -131,6 +146,8 @@ function TaskForm({ task: t, categories, onClose, onSaved }) {
         if (!d.skills.split(',').some((s) => s.trim())) e.skills = 'Add at least one skill.'
         if (d.imageUrl && !unsplashId(d.imageUrl)) e.imageUrl = 'Use an https://images.unsplash.com/photo-… URL.'
         try { parseRefLinks(d.refLinks) } catch (x) { e.refLinks = x.message }
+        try { parseInputs(d.inputs) } catch (x) { e.inputs = x.message }
+        if (d.status === 'published') { const m = missingBrief(formToTask(d)); if (m.length) e.status = `Add the ${m.join(', ')} before publishing.` }
         try { formToConfig(d.workspaceType || CATEGORY_TYPE[d.category] || 'assistant', d) } catch (x) { e.tools = x.message }
         return e
       }}
@@ -150,7 +167,7 @@ function TaskForm({ task: t, categories, onClose, onSaved }) {
           summary: d.summary, description: d.description, objectives: toList(d.objectives), instructions: d.instructions, guidelines: toList(d.guidelines),
           skills: d.skills.split(',').map((s) => s.trim()).filter((s, i, a) => s && a.findIndex((x) => x.toLowerCase() === s.toLowerCase()) === i),
           experience: d.experience, responsibilities: toList(d.responsibilities), deliverables: toList(d.deliverables), qualifications: toList(d.qualifications),
-          applyInstructions: d.apply, referenceLinks: parseRefLinks(d.refLinks), deadline: d.deadline || null, status: d.status, image,
+          applyInstructions: d.apply, referenceLinks: parseRefLinks(d.refLinks), brief: formToBrief(d), deadline: d.deadline || null, status: d.status, image,
           workspaceType: d.workspaceType || null, workspaceConfig: formToConfig(d.workspaceType || CATEGORY_TYPE[d.category] || 'assistant', d),
         })
         onSaved()

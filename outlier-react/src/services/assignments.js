@@ -21,6 +21,7 @@ export const recentSegments = async (limit = 8) =>
 export const activeSegments = async () =>
   unwrap(await supabase.from('time_segments').select('id, user_id, started_at, assignment_id, assignments(tasks(title))').is('ended_at', null))
 
+export const ackBriefing = (id) => rpc('ack_briefing', { p_assignment: id })
 export const ackOnboarding = (id) => rpc('ack_onboarding', { p_assignment: id })
 export const timerState = (id) => rpc('timer_state', { p_assignment: id })
 export const startWork = (id) => rpc('start_work', { p_assignment: id })

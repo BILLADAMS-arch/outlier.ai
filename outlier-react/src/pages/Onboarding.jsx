@@ -1,14 +1,11 @@
 import { useState } from 'react'
-import RefLinks from '../components/RefLinks'
+import BriefView from '../components/brief/BriefView'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useAsync } from '../hooks/useAsync'
 import * as assignmentsApi from '../services/assignments'
 import { useToast } from '../context/ToastContext'
-import { onboardingContent } from '../utils/onboarding'
 import { money } from '../utils/format'
 import { EmptyState, Loaded, PageHeader } from '../components/ui'
-
-const Bullets = ({ items, ordered }) => (ordered ? <ol className="step-list">{items.map((i) => <li key={i}>{i}</li>)}</ol> : <ul className="bullets">{items.map((i) => <li key={i}>{i}</li>)}</ul>)
 
 export default function Onboarding() {
   const { assignmentId } = useParams()
@@ -26,8 +23,7 @@ export default function Onboarding() {
         // Returning taskers (and projects past the working stage) skip onboarding.
         if (a.onboardedAt || !['assigned', 'in_progress'].includes(a.status)) return <Navigate to={`/workspace/project/${a.id}`} replace />
         const t = a.tasks
-        const c = onboardingContent(t)
-        async function complete() {
+                async function complete() {
           setBusy(true)
           try {
             await assignmentsApi.ackOnboarding(a.id)
@@ -43,11 +39,8 @@ export default function Onboarding() {
         return (
           <>
             <PageHeader title={`Onboarding: ${t.title}`}>Read everything below and confirm before you start working.</PageHeader>
-            <div className="panel"><h2>Project overview</h2><p className="lead">{c.overview}</p></div>
-            <div className="panel"><h2>Project objectives</h2><Bullets items={c.objectives} /></div>
-            <div className="panel"><h2>Detailed instructions</h2><Bullets items={c.instructions} ordered /></div>
-            <div className="panel"><h2>Expected deliverables</h2><Bullets items={c.deliverables} /></div>
-            <div className="panel"><h2>Required skills</h2><div className="chips">{c.skills.map((s) => <span className="chip" key={s}>{s}</span>)}</div></div>
+            <div className="callout info">This is the full project briefing. It stays available in the workspace while you work.</div>
+            <BriefView task={t} />
             <div className="panel">
               <h2>Payment</h2>
               <dl className="kv">
@@ -57,10 +50,8 @@ export default function Onboarding() {
               </dl>
               <p className="muted">You are paid for approved tracked working time: approved hours × your hourly rate.</p>
             </div>
-            {t.referenceLinks?.length > 0 && <div className="panel"><h2>References and tools</h2><RefLinks links={t.referenceLinks} /></div>}
-            <div className="panel"><h2>Important project guidelines</h2><Bullets items={c.guidelines} /></div>
             <div className="panel">
-              <label className="check"><input type="checkbox" checked={read} onChange={(e) => setRead(e.target.checked)} /><span>I have read and understood the project overview, objectives, instructions and expected deliverables.</span></label>
+              <label className="check"><input type="checkbox" checked={read} onChange={(e) => setRead(e.target.checked)} /><span>I have reviewed the full project briefing: the background, scope, step-by-step instructions, input materials, deliverables, acceptance criteria and submission requirements.</span></label>
               <label className="check"><input type="checkbox" checked={guidelines} onChange={(e) => setGuidelines(e.target.checked)} /><span>I agree to follow the project guidelines and the payment terms above.</span></label>
               <button className="btn big" disabled={!read || !guidelines || busy} onClick={complete}>{busy ? 'Saving…' : 'Complete onboarding and start working'}</button>
             </div>

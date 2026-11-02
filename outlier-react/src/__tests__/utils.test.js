@@ -201,3 +201,30 @@ describe('reference links', () => {
     expect(() => parseRefLinks('A | https://x.example | other')).toThrow(/type/)
   })
 })
+
+import { briefSections, hasDetailedBrief, missingBrief, parseInputs, formatInputs } from '../utils/brief'
+describe('project brief helpers', () => {
+  const task = {
+    title: 'T', description: 'Do the thing.', instructions: 'Step one\nStep two', deliverables: ['A report (PDF)'], skills: ['SQL'], qualifications: [], estimatedHours: 5, deadline: null,
+    categoryId: 'data', objectives: ['Goal'], brief: { background: 'Why', problem: 'What', scopeIn: ['x'], scopeOut: [], acceptance: ['Passes'], inputs: [{ title: 'Data', kind: 'public', url: 'https://example.com' }], caseData: '' },
+  }
+  it('builds ordered sections and flags a complete brief', () => {
+    const ids = briefSections(task).map((s) => s.id)
+    expect(ids.slice(0, 4)).toEqual(['overview', 'background', 'problem', 'scope'])
+    expect(ids).toContain('acceptance')
+    expect(hasDetailedBrief(task)).toBe(true)
+    expect(missingBrief(task)).toEqual([])
+  })
+  it('lists what an administrator still has to add', () => {
+    expect(missingBrief({ instructions: '', brief: {} })).toEqual(['background', 'problem statement', 'scope', 'step-by-step instructions', 'input materials', 'acceptance criteria'])
+    expect(hasDetailedBrief({ brief: {}, instructions: 'a' })).toBe(false)
+  })
+  it('round-trips and validates input materials', () => {
+    const i = parseInputs('Data | public | https://example.com/d | note\nCase | illustrative\nFind it | tasker')
+    expect(i.map((x) => x.kind)).toEqual(['public', 'illustrative', 'tasker'])
+    expect(parseInputs(formatInputs(i))).toEqual(i)
+    expect(() => parseInputs('X | public')).toThrow(/link/)
+    expect(() => parseInputs('X | other')).toThrow(/type/)
+    expect(() => parseInputs('X | public | http://insecure.example')).toThrow(/https/)
+  })
+})
