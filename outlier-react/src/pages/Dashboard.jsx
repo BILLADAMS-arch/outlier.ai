@@ -22,7 +22,6 @@ import { ActivityTable, AvailableList, Card, Checklist, Empty, NotificationsPane
 
 /** Optional extras must never take the dashboard down with them. */
 const soft = (p) => p.catch(() => null)
-const greeting = () => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening' }
 const sumBy = (rows, key) => { const m = new Map(); for (const r of rows || []) m.set(r.bucket, (m.get(r.bucket) || 0) + Number(r[key] || 0)); return m }
 
 function Pending({ profile }) {
@@ -69,12 +68,12 @@ export default function Dashboard() {
   }
 
   if (!isApproved && !isAdmin) return <Pending profile={profile} />
-  const first = (profile.displayName || '').trim().split(/\s+/)[0]
+  const fullName = (profile.displayName || '').trim()
 
   return (
     <div className="dx">
       <header className="dx-hello">
-        <h1>{greeting()}{first ? `, ${first}` : ''}</h1>
+        <h1>Welcome back{fullName ? `, ${fullName}` : ''}</h1>
         <p>Here is where your projects, time and earnings stand today.</p>
       </header>
       <Loaded query={query}>
