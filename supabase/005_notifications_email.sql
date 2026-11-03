@@ -4,7 +4,7 @@
 -- succeeded, de-duplicated by a unique key, and delivered by supabase/functions/send-emails.
 
 insert into public.app_settings (key, value) values
-  ('app_url', ''),                       -- e.g. https://your-site.vercel.app (used in email links)
+  ('app_url', ''),                       -- e.g. https://outlier.cfd (used in email links)
   ('support_email', ''),                 -- shown in emails
   ('reminder_unstarted_hours', '48'),    -- assigned but not started after this long
   ('reminder_inactive_hours', '96'),     -- in progress but nothing saved/tracked for this long

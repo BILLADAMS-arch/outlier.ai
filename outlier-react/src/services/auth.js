@@ -25,7 +25,7 @@ export const signOut = () => supabase.auth.signOut()
 
 export async function getProfile(userId) {
   return unwrap(
-    await supabase.from('profiles').select('id, display_name, email, role, account_status, review_note, created_at').eq('id', userId).maybeSingle(),
+    await supabase.from('profiles').select('id, display_name, email, role, account_status, review_note, created_at, marketing_opt_out').eq('id', userId).maybeSingle(),
   )
 }
 

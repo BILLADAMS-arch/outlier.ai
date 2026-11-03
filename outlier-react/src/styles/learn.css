@@ -52,3 +52,6 @@
 .bv-modal-body { padding: 16px 20px 8px; } .bv-modal-foot { position: sticky; bottom: 0; background: #fff; border-radius: 0 0 18px 18px; border-top: 1px solid #e6eaf2; padding: 14px 20px; display: flex; flex-direction: column; gap: 10px; }
 .ws-brief-btn { width: 100%; margin-bottom: 8px; }
 @media (max-height: 640px) { .bv-modal-head, .bv-modal-foot { position: static; } }
+.unsub { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: #f5f7fb; }
+.unsub-card { background: #fff; border: 1px solid #e6eaf2; border-radius: 16px; padding: 28px; max-width: 460px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 16px rgba(15, 23, 42, .06); }
+.unsub-card h1 { font-size: 1.3rem; } .unsub-card p { color: #475569; line-height: 1.6; }

@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
   for (const row of rows || []) {
     try {
       const mail = render(row.type, row.payload, cfg)
-      const id = await sendViaResend({ to: row.to_email, subject: mail.subject, html: mail.html, text: mail.text, idempotencyKey: row.id, tags: { type: row.type } })
+      const id = await sendViaResend({ to: row.to_email, subject: mail.subject, html: mail.html, text: mail.text, idempotencyKey: row.id, tags: { type: row.type }, headers: mail.headers })
       await sb.from('email_outbox').update({ status: 'sent', provider_id: id, sent_at: new Date().toISOString(), last_error: null, subject: mail.subject, delivery_status: 'accepted' }).eq('id', row.id)
       sent++
     } catch (e) {

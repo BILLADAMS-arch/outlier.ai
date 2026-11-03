@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { PageHeader } from '../../components/ui'
 
-const TABS = [['taskers', 'Taskers'], ['tasks', 'Projects'], ['categories', 'Categories'], ['applications', 'Applications'], ['work', 'Work & Hours'], ['payments', 'Payments'], ['earnings', 'Earnings'], ['payout-accounts', 'Payment Accounts'], ['settings', 'Settings']]
+const TABS = [['taskers', 'Taskers'], ['tasks', 'Projects'], ['categories', 'Categories'], ['applications', 'Applications'], ['work', 'Work & Hours'], ['payments', 'Payments'], ['announcements', 'Announcements'], ['earnings', 'Earnings'], ['payout-accounts', 'Payment Accounts'], ['settings', 'Settings']]
 
 export default function AdminLayout() {
   return (

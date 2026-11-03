@@ -27,6 +27,8 @@ import AdminApplications from './pages/admin/AdminApplications'
 import AdminWork from './pages/admin/AdminWork'
 import AdminPayments from './pages/admin/AdminPayments'
 import AdminPayoutAccounts from './pages/admin/AdminPayoutAccounts'
+import AdminAnnouncements from './pages/admin/AdminAnnouncements'
+import Unsubscribe from './pages/Unsubscribe'
 
 function WorkRedirect() {
   const { assignmentId } = useParams()
@@ -38,6 +40,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route element={<RequireAuth />}>
         <Route element={<RequireApproved />}>
           <Route path="/workspace/project/:assignmentId" element={<WorkspacePage />} />
@@ -66,6 +69,7 @@ export default function App() {
               <Route path="applications" element={<AdminApplications />} />
               <Route path="work" element={<AdminWork />} />
               <Route path="payments" element={<AdminPayments />} />
+              <Route path="announcements" element={<AdminAnnouncements />} />
               <Route path="payout-accounts" element={<AdminPayoutAccounts />} />
               <Route path="review/:assignmentId" element={<AdminReview />} />
               <Route path="earnings" element={<AdminEarnings />} />

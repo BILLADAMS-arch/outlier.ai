@@ -11,7 +11,7 @@ supabase login
 supabase link --project-ref uviopkumykzfabzkeswc
 supabase secrets set RESEND_API_KEY=<your Resend key> \
   EMAIL_FROM="Outlier <support@outlier.cfd>" EMAIL_REPLY_TO=support@outlier.cfd SUPPORT_EMAIL=support@outlier.cfd \
-  APP_URL=https://<your-site>.vercel.app CRON_SECRET=<long random string> OTP_EXPIRY_MINUTES=5
+  APP_URL=https://outlier.cfd CRON_SECRET=<long random string> OTP_EXPIRY_MINUTES=5
 ```
 Add later: `SEND_EMAIL_HOOK_SECRET` (shown when you create the Auth hook, step 3) and `RESEND_WEBHOOK_SECRET` (shown when you create the Resend webhook, step 5).
 Rotate the Resend key in the Resend dashboard whenever it has been shared, then run `supabase secrets set RESEND_API_KEY=...` again.
@@ -74,3 +74,10 @@ It adds per-project reference links (with category defaults) and `refresh_task_p
 (`run_scheduled_jobs`, every 15 minutes) calls: expired published projects are re-opened with a new deadline, and up to
 `task_drip_per_day` (default 5) draft projects are published each day. Tune with the `task_refresh_days` and `task_drip_per_day` settings.
 Check it with `select public.refresh_task_pool();` and `select * from cron.job_run_details order by start_time desc limit 5;`.
+
+## Promotional email (010)
+
+1. Run `supabase/010_promo_email.sql` (needs the `cron_secret` Vault entry from `schedule.sql`; the unsubscribe token is derived from it).
+2. Redeploy the sender: `supabase functions deploy send-emails --no-verify-jwt` (new `promo_projects` template and List-Unsubscribe headers).
+3. In the app: Admin > Announcements. Save the postal address, send a test to yourself, then send to everyone.
+Opted-out accounts are skipped; re-running a campaign id never emails the same person twice. Transactional email ignores the opt-out.

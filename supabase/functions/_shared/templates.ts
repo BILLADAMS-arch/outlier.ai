@@ -30,7 +30,7 @@ const callout = (t: string, tone: 'info' | 'warn' = 'info'): Block => ({
 })
 const code = (c: string): Block => ({ html: `<div style="margin:6px 0 18px;text-align:center"><span style="display:inline-block;font-family:'SFMono-Regular',Consolas,monospace;font-size:34px;letter-spacing:8px;font-weight:700;background:#f1f5ff;border:1px dashed #93b4ff;border-radius:10px;padding:14px 22px;color:#1d4ed8">${esc(c)}</span></div>`, text: `Your code: ${c}` })
 
-function layout(c: Cfg, o: { title: string; preheader?: string; blocks: Block[]; button?: { label: string; url: string }; note?: string }) {
+function layout(c: Cfg, o: { title: string; preheader?: string; blocks: Block[]; button?: { label: string; url: string }; note?: string; promo?: { unsubscribeUrl: string; address: string } }) {
   const btn = o.button ? `<div style="text-align:center;margin:22px 0 8px"><a href="${esc(o.button.url)}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;font-weight:600;padding:13px 28px;border-radius:99px;font-size:15px">${esc(o.button.label)}</a></div>` : ''
   const support = c.supportEmail ? `Questions? Contact us at <a href="mailto:${esc(c.supportEmail)}" style="color:#2563eb">${esc(c.supportEmail)}</a>.` : ''
   const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(o.title)}</title></head>
@@ -40,9 +40,9 @@ function layout(c: Cfg, o: { title: string; preheader?: string; blocks: Block[];
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)">
 <tr><td style="padding:22px 28px;background:linear-gradient(120deg,#e0d4ff,#cfe6ff)"><img src="${esc(c.logoUrl)}" alt="${esc(c.brand)}" height="26" style="display:block;border:0"></td></tr>
 <tr><td style="padding:28px;font-size:15px;line-height:1.6"><h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:#111827">${esc(o.title)}</h1>${o.blocks.map((b) => b.html).join('')}${btn}${o.note ? `<p style="margin:18px 0 0;font-size:13px;color:#6b7280">${esc(o.note)}</p>` : ''}</td></tr>
-<tr><td style="padding:18px 28px;background:#f8fafc;font-size:12px;color:#6b7280;line-height:1.6">${support}<br>${esc(c.brand)} · Remote work, tracked fairly and paid on approved hours.<br>You are receiving this email because of activity on your ${esc(c.brand)} account.</td></tr>
+<tr><td style="padding:18px 28px;background:#f8fafc;font-size:12px;color:#6b7280;line-height:1.6">${support}<br>${esc(c.brand)} · Remote work, tracked fairly and paid on approved hours.<br>${o.promo ? `You are receiving this promotional email because you have an ${esc(c.brand)} account. <a href="${esc(o.promo.unsubscribeUrl)}" style="color:#2563eb">Unsubscribe from promotional emails</a>.<br>${esc(o.promo.address)}` : `You are receiving this email because of activity on your ${esc(c.brand)} account.`}</td></tr>
 </table></td></tr></table></body></html>`
-  const text = [o.title, '', ...o.blocks.map((b) => b.text), ...(o.button ? ['', `${o.button.label}: ${o.button.url}`] : []), ...(o.note ? ['', o.note] : []), '', '--', c.supportEmail ? `Support: ${c.supportEmail}` : '', c.brand].join('\n')
+  const text = [o.title, '', ...o.blocks.map((b) => b.text), ...(o.button ? ['', `${o.button.label}: ${o.button.url}`] : []), ...(o.note ? ['', o.note] : []), ...(o.promo ? ['', `Unsubscribe from promotional emails: ${o.promo.unsubscribeUrl}`, o.promo.address] : []), '', '--', c.supportEmail ? `Support: ${c.supportEmail}` : '', c.brand].join('\n')
   return { html, text }
 }
 
@@ -69,7 +69,25 @@ function statementBlocks(p: P): Block[] {
   return blocks
 }
 
-export const TEMPLATES: Record<string, (p: P, c: Cfg) => { subject: string; html: string; text: string }> = {
+export const TEMPLATES: Record<string, (p: P, c: Cfg) => { subject: string; html: string; text: string; headers?: Record<string, string> }> = {
+  promo_projects: (p, c) => {
+    const projects: P[] = Array.isArray(p.projects) ? p.projects : []
+    const total = Number(p.total || projects.length)
+    const intro = p.approved
+      ? `There are ${total} open projects on ${c.brand} right now, and new ones are added regularly. Here are some you can apply for today:`
+      : `There are ${total} open projects on ${c.brand}. Your account is still awaiting approval; once an administrator approves it you can apply to projects like these:`
+    const rows = projects.map((x) => `<tr><td style="padding:12px 0;border-bottom:1px solid #eef2f7"><a href="${esc(abs(c, `/marketplace/${x.id}`))}" style="color:#111827;font-weight:600;text-decoration:none">${esc(x.title)}</a><br><span style="color:#6b7280;font-size:13px">${esc(x.category)} · ${esc(x.difficulty)} · about ${esc(x.hours)} h</span><br><span style="color:#374151;font-size:13px">${esc(x.summary)}</span></td><td align="right" style="padding:12px 0 12px 12px;border-bottom:1px solid #eef2f7;white-space:nowrap;font-weight:700;color:#2563eb">${usd(x.rate)}/hr</td></tr>`).join('')
+    const list = { html: `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px">${rows}</table>`, text: projects.map((x) => `- ${x.title} (${x.category}, ${x.difficulty}): ${usd(x.rate)}/hr, about ${x.hours} h\n  ${abs(c, `/marketplace/${x.id}`)}`).join('\n') }
+    const mail = out(`${p.subject || ''}` || 'New projects are open for you', c, {
+      title: 'Projects are open for you', preheader: `${total} open projects, from ${usd(Math.min(...projects.map((x) => Number(x.rate))))} to ${usd(Math.max(...projects.map((x) => Number(x.rate))))} per hour`,
+      blocks: [para(hi(p)), para(intro), list,
+        para(p.approved ? 'Our advice: open the projects that match your skills, read the full brief (it lists the scope, input materials, deliverables and acceptance criteria), and apply with a short note about your relevant experience and availability. Applying early gives an administrator more time to review you.' : 'In the meantime you can read each project brief to see what the work involves.'),
+        para('Pay is your agreed hourly rate multiplied by approved working time, paid on the last Tuesday of each month once your payment details are verified.')],
+      button: { label: p.approved ? 'Browse all projects and apply' : 'See the projects', url: abs(c, p.approved ? '/marketplace' : '/dashboard') },
+      promo: { unsubscribeUrl: String(p.unsubscribeUrl || ''), address: String(p.address || '') },
+    })
+    return { ...mail, headers: { 'List-Unsubscribe': `<${p.unsubscribeUrl}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } }
+  },
   otp_signup: (p, c) => out(`Your ${c.brand} verification code`, c, { title: 'Verify your email', preheader: `Your code is ${p.token}`,
     blocks: [para(hi(p)), para(`Welcome to ${c.brand}! Enter this one-time code to verify your email and finish creating your account.`), code(p.token),
       para(`The code expires in ${c.otpMinutes} minutes and can only be used once. Your account stays inactive until you verify it.`)],

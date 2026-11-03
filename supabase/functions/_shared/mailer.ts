@@ -3,7 +3,7 @@
 import { Resend } from 'npm:resend@4'
 
 export interface MailerEnv { RESEND_API_KEY?: string; EMAIL_FROM?: string; EMAIL_REPLY_TO?: string }
-export interface Mail { to: string; subject: string; html: string; text: string; idempotencyKey: string; tags?: Record<string, string> }
+export interface Mail { to: string; subject: string; html: string; text: string; idempotencyKey: string; tags?: Record<string, string>; headers?: Record<string, string> }
 
 /** An error from the mail provider. `retryable` is true for rate limits, timeouts and provider outages. */
 export class EmailError extends Error {
@@ -27,7 +27,7 @@ export function createMailer(env: MailerEnv) {
       let res
       try {
         res = await client.emails.send({
-          from, to: [m.to], subject: m.subject, html: m.html, text: m.text, replyTo,
+          from, to: [m.to], subject: m.subject, html: m.html, text: m.text, replyTo, headers: m.headers,
           tags: Object.entries(m.tags || {}).map(([name, value]) => ({ name, value })),
         }, { idempotencyKey: m.idempotencyKey.slice(0, 256) })
       } catch (e) {
