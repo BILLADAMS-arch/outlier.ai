@@ -3,13 +3,16 @@ import { useAsync } from '../../hooks/useAsync'
 import { useToast } from '../../context/ToastContext'
 import * as promoApi from '../../services/promo'
 import { Loaded } from '../../components/ui'
+import { fmtDateTime } from '../../utils/format'
 
 const todayId = () => `projects-${new Date().toISOString().slice(0, 10)}`
 
 /** Sends the "available projects" promotional email: first to yourself as a test, then to everyone who has not opted out. */
 export default function AdminAnnouncements() {
   const toast = useToast()
-  const query = useAsync(async () => ({ audience: await promoApi.audience(), address: await promoApi.getAddress() }), [])
+  const query = useAsync(async () => ({ audience: await promoApi.audience(), address: await promoApi.getAddress(), ongoing: await promoApi.reminderAudience() }), [])
+  const [remTested, setRemTested] = useState(false)
+  const [remCampaign, setRemCampaign] = useState(`continue-${new Date().toISOString().slice(0, 10)}`)
   const [subject, setSubject] = useState('New projects are open: apply today')
   const [campaign, setCampaign] = useState(todayId())
   const [address, setAddress] = useState(null)
@@ -19,7 +22,7 @@ export default function AdminAnnouncements() {
 
   return (
     <Loaded query={query}>
-      {({ audience, address: saved }) => {
+      {({ audience, address: saved, ongoing }) => {
         const addr = address ?? saved
         return (
           <>
@@ -55,6 +58,24 @@ export default function AdminAnnouncements() {
               </div>
               {!saved && <p className="muted">Save the postal address first.</p>}
               {saved && !tested && <p className="muted">Send yourself a test first; the main send unlocks afterwards.</p>}
+            </section>
+            <section className="panel">
+              <h2>Reminder: continue your ongoing work</h2>
+              <p className="muted">Sends each tasker with a project in progress an in-app notification and an email with a Continue working button, showing their progress and last save. This is an account email, so it is sent even to people who opted out of promotions.</p>
+              {ongoing.length ? (
+                <div className="table-wrap"><table>
+                  <thead><tr>{['Tasker', 'Email', 'Project', 'Progress', 'Last activity'].map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                  <tbody>{ongoing.map((o) => <tr key={o.assignmentId}><td>{o.name}</td><td>{o.email}</td><td>{o.project}</td><td>{o.progress == null ? '—' : `${o.progress}%`}</td><td>{o.lastActivity ? fmtDateTime(o.lastActivity) : 'Not started'}</td></tr>)}</tbody>
+                </table></div>
+              ) : <p className="muted">Nobody has a project in progress.</p>}
+              <div className="toolbar">
+                <input aria-label="Reminder campaign id" value={remCampaign} onChange={(e) => setRemCampaign(e.target.value)} title="Sending the same campaign id twice never reminds the same project twice" />
+                <button className="btn secondary" disabled={busy || !remCampaign.trim()} onClick={() => run(() => promoApi.queueReminders(remCampaign, true), (r) => { setRemTested(true); return `Test reminder queued for ${r.queued} of your own projects.` })}>Send a test to me</button>
+                <button className="btn" disabled={busy || !remTested || !ongoing.length}
+                  onClick={() => { if (window.confirm(`Send a continue-working reminder to ${ongoing.length} ongoing projects now? This cannot be undone.`)) run(() => promoApi.queueReminders(remCampaign, false), (r) => `${r.queued} reminders queued for delivery.`) }}>
+                  Send to {ongoing.length} ongoing projects
+                </button>
+              </div>
             </section>
           </>
         )
