@@ -19,3 +19,7 @@ export async function unsubscribe(userId, token) {
   if (error) throw new Error(error.message)
   return data === true
 }
+
+export const inactiveAudience = (days, mode = 'inactive') => rpc('inactive_audience', { p_days: days, p_mode: mode })
+/** Queues the inactive-account notice (in-app and email): to yourself only (test) or to every inactive account. */
+export const queueInactivity = (campaign, days, test, mode = 'inactive') => rpc('queue_inactivity_notices', { p_campaign: campaign, p_days: days, p_test: test, p_mode: mode }).then((r) => { kickEmails(); return r })

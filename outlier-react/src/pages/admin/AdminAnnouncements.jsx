@@ -11,6 +11,11 @@ const todayId = () => `projects-${new Date().toISOString().slice(0, 10)}`
 export default function AdminAnnouncements() {
   const toast = useToast()
   const query = useAsync(async () => ({ audience: await promoApi.audience(), address: await promoApi.getAddress(), ongoing: await promoApi.reminderAudience() }), [])
+  const [days, setDays] = useState(30)
+  const [mode, setMode] = useState('inactive')
+  const inactive = useAsync(() => promoApi.inactiveAudience(Math.max(Number(days) || 30, 1), mode), [days, mode])
+  const [inTested, setInTested] = useState(false)
+  const [inCampaign, setInCampaign] = useState(`inactive-${new Date().toISOString().slice(0, 10)}`)
   const [remTested, setRemTested] = useState(false)
   const [remCampaign, setRemCampaign] = useState(`continue-${new Date().toISOString().slice(0, 10)}`)
   const [subject, setSubject] = useState('New projects are open: apply today')
@@ -18,7 +23,7 @@ export default function AdminAnnouncements() {
   const [address, setAddress] = useState(null)
   const [busy, setBusy] = useState(false)
   const [tested, setTested] = useState(false)
-  const run = async (fn, ok) => { setBusy(true); try { const r = await fn(); toast.success(ok(r)); query.reload() } catch (e) { toast.error(e.message) } finally { setBusy(false) } }
+  const run = async (fn, ok) => { setBusy(true); try { const r = await fn(); toast.success(ok(r)); query.reload(); inactive.reload() } catch (e) { toast.error(e.message) } finally { setBusy(false) } }
 
   return (
     <Loaded query={query}>
@@ -76,6 +81,37 @@ export default function AdminAnnouncements() {
                   Send to {ongoing.length} ongoing projects
                 </button>
               </div>
+            </section>
+            <section className="panel">
+              <h2>Notice: inactive accounts</h2>
+              <p className="muted">Warns accounts with no sign-in and no logged work for the chosen number of days that inactive accounts can be suspended or terminated, including where inactivity raises a suspected fraud concern. It does not say the person is suspected of fraud. This is an account notice, so it is sent even to people who opted out of promotions. Only send it if your terms or policy actually allow suspension for inactivity.</p>
+              <div className="toolbar">
+                <select aria-label="Who is inactive" value={mode} onChange={(e) => { setMode(e.target.value); setInTested(false) }}>
+                  <option value="inactive">No sign-in or work for a number of days</option>
+                  <option value="never_worked">Signed in, but never logged any work</option>
+                </select>
+                {mode === 'inactive' && <label>at least <input type="number" min="1" aria-label="Inactive days" value={days} onChange={(e) => { setDays(e.target.value); setInTested(false) }} style={{ width: 70 }} /> days</label>}
+              </div>
+              <Loaded query={inactive}>
+                {(list) => (
+                  <>
+                    {list.length ? (
+                      <div className="table-wrap"><table>
+                        <thead><tr>{['Name', 'Email', mode === 'never_worked' ? 'Last sign-in' : 'Last activity', 'Days ago'].map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                        <tbody>{list.map((o) => <tr key={o.userId}><td>{o.name}</td><td>{o.email}</td><td>{fmtDateTime(o.lastActive)}</td><td>{o.days}</td></tr>)}</tbody>
+                      </table></div>
+                    ) : <p className="muted">No accounts have been inactive that long.</p>}
+                    <div className="toolbar">
+                      <input aria-label="Inactivity campaign id" value={inCampaign} onChange={(e) => setInCampaign(e.target.value)} title="Sending the same campaign id twice never emails the same person twice" />
+                      <button className="btn secondary" disabled={busy || !inCampaign.trim()} onClick={() => run(() => promoApi.queueInactivity(inCampaign, Number(days) || 30, true, mode), () => { setInTested(true); return 'Test notice queued to your own address.' })}>Send a test to me</button>
+                      <button className="btn" disabled={busy || !inTested || !list.length}
+                        onClick={() => { if (window.confirm(`Send the inactivity notice to ${list.length} accounts now? This cannot be undone.`)) run(() => promoApi.queueInactivity(inCampaign, Number(days) || 30, false, mode), (r) => `${r.queued} notices queued for delivery.`) }}>
+                        Send to {list.length} inactive accounts
+                      </button>
+                    </div>
+                  </>
+                )}
+              </Loaded>
             </section>
           </>
         )
